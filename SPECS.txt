@@ -1,0 +1,65 @@
+Clinic Appointment System
+
+Your team is commissioned to develop a generic clinic appointment system. The system is composed of 3 modules:
+
+1. Doctor Module
+2. Secretary Module
+3. Client Module
+ 
+
+Form a team composed of 6-8 members. You are allowed to form teams from the other section as long as each sections have balanced members/representatives (4 from S17 and 4 from S18). 
+
+ 
+
+Doctor Module
+
+This module allows the doctor to manage available appointment slots:
+
+-As a doctor, I want to set single or recurring dates and times that clients can set an appointment with me.
+-As a doctor, I want to change the date or time of a single appointment slot that is still free.
+-As a doctor, I want to free up an available appointment slot so that I can attend organization meetings and conferences.
+-As a doctor, I want to see my appointment slots for a day and a week in calendar form.
+-As a doctor, I want to see my appointment slots for a day and a week in agenda form.
+-As a doctor, I want to see real time when an appointment slot has been taken.
+-As a doctor, I don’t want to set overlapping appointment slots.
+-As a doctor, I only want to see my free and reserved appointment slots.
+ 
+
+Secretary Module
+
+This module allows the secretary to manage appointment slots of the doctors in the clinic:
+
+-As a secretary, I want to see all appointment slots of the doctors in either calendar or agenda form.
+-As a secretary, I want to check the available appointment slots of all and some doctors so that I can accommodate walk-in clients and answer appointment inquiries.
+-As a secretary, I want to book an appointment on behalf of walk-in and phone in clients.
+-As a secretary, I want to verify the filled appointment slots of all and some doctors so that I can remind them.
+-As a secretary, I want to filter all appointment slots per doctor.
+-As a secretary, I want to differentiate between the available and taken appointment slots by color.
+-As a secretary, I want to see real time when an appointment slot has been taken.
+-As a secretary, I want to see all appointments for a day and a week in calendar form.
+-As a secretary, I want to see all appointments for a day and a week in agenda form.
+ 
+
+Client Module
+
+This module allows the client to manage reserve appointment slots:
+
+-As a client, I want to check all the available appointment slots of all or some doctors.
+-As a client, I want to reserve an appointment slot with a doctor.
+-As a client, I want to cancel a previously reserved appointment slot.
+-As a client, I want to see my reservations.
+ 
+
+General Requirements:
+
+-Implement the ultimate design challenge as a group.
+-Implement the system using a relational database as storage.
+-Discuss the rationale behind your Software Design (Class Diagram).
+-Discuss how your group divided up the work amongst the members.
+ 
+
+General Assumptions:
+
+-There is only 1 clinic shared by all doctors.
+-There are 2 clients, 1 secretary, and 2 doctors when we start the application.
+-There are no overlaps between the appointment slots created by the doctors since they are using only 1 clinic.
