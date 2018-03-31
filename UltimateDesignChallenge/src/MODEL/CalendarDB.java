@@ -15,9 +15,9 @@ import java.sql.SQLException;
  */
 public class CalendarDB {
     private final static String DRIVER_NAME = "com.mysql.jdbc.Driver";
-    private final static String URL = "jdbc:mysql://127.0.0.1:3306/";
-    private final static String USERNAME = "root";
-    private final static String PASSWORD = "introdb";
+    private final static String URL = "jdbc:mysql://192.168.0.162:3306/";
+    private final static String USERNAME = "udc";
+    private final static String PASSWORD = "udc";
     private final static String DATABASE = "UDC";
 	
     public Connection getConnection () {
@@ -40,5 +40,10 @@ public class CalendarDB {
             e.printStackTrace();
             return null;
 	}
+    }
+    
+    public static void main(String args[]) {
+        CalendarDB db = new CalendarDB();
+        db.getConnection();
     }
 }
