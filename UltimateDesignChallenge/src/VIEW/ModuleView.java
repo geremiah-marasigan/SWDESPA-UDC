@@ -5,13 +5,19 @@
  */
 package VIEW;
 
+import CONTROLLER.DoctorController;
+import CONTROLLER.ModuleController;
+import MODEL.Appointment;
+import MODEL.User;
 import java.awt.Color;
 import java.awt.Container;
+import java.awt.Dimension;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.GregorianCalendar;
+import java.util.List;
 import javax.swing.JButton;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
@@ -28,6 +34,9 @@ import javax.swing.table.DefaultTableModel;
  */
 public class ModuleView extends JFrame {
     private Container mainPane;
+    public ModuleController controller;
+    private User user;
+    private Builder builder;
     
     /**** Calendar Table Components ***/
     public JTable calendarTable;
@@ -39,8 +48,16 @@ public class ModuleView extends JFrame {
     private int yearBound, monthBound, dayBound, yearToday, monthToday;
     private String[] months =  {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     
+    /**** Agenda and Schedule View Components ****/
+    private JScrollPane agendaScroll;
+    private JScrollPane scheduleScroll;
+    private AgendaView av;
+    private ScheduleView sv;
+    private JLabel agendaLbl, schedLbl;
+    private String curDate;
+    
     public ModuleView() {
-        this.setSize(900, 650);
+        this.setSize(900, 660);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainPane = this.getContentPane();
         mainPane.setBackground(Color.WHITE);
@@ -49,6 +66,54 @@ public class ModuleView extends JFrame {
         this.setResizable(false);
         
         initCalendar();
+    }
+    
+    public void attachBuilder(Builder b) {
+        this.builder = b;
+    }
+    
+    public void setController (ModuleController controller) {
+        this.controller = controller;
+        
+        this.av = new AgendaView(controller);
+        av.setUser(user);
+        agendaScroll = new JScrollPane(av);
+        agendaScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        agendaScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        agendaScroll.setBounds(220, 40, 390,450);
+        agendaLbl = new JLabel("Agenda for Today");
+        agendaLbl.setBounds(220, 10, 390, 30);
+        
+        mainPane.add(agendaScroll);
+        mainPane.add(agendaLbl);
+
+        this.sv = new ScheduleView(controller);
+        scheduleScroll = new JScrollPane(sv);
+        scheduleScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        scheduleScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
+        scheduleScroll.getVerticalScrollBar().setUnitIncrement(10);
+        scheduleScroll.setBounds(620, 40, 260,580);
+        schedLbl = new JLabel("Schedule for Today");
+        schedLbl.setBounds(620, 10, 260, 30);
+        
+        mainPane.add(scheduleScroll);
+        mainPane.add(schedLbl);
+    }
+    
+    public void setUser (User user) {
+        this.user = user;
+    }
+    
+    public void setScheduleItems (List<Appointment> apps) {
+        sv.setItems();
+    }
+    
+    public void setAgendaItems (List<Appointment> apps, String date) {
+        av.setItems(apps, date);
+    }
+    
+    public void updateViews (List<Appointment> apps) {
+        av.setItems(apps, curDate);
     }
     
     public void initCalendar() {
@@ -141,33 +206,12 @@ public class ModuleView extends JFrame {
         GregorianCalendar cal = new GregorianCalendar(year, month, 1);
         nod = cal.getActualMaximum(GregorianCalendar.DAY_OF_MONTH);
         som = cal.get(GregorianCalendar.DAY_OF_WEEK);
-        
-        /*
-        eDay.setSelectedItem(""+1);
-        eYear.setSelectedItem(""+year);
-            
-        eDay2.setSelectedItem(""+1);
-        eYear2.setSelectedItem(""+year);
-
-        curYear = year;
-        curMonth = month + 1;
-        curDay = 1;
-
-        eMonth.setSelectedItem(months[month]);
-        eMonth2.setSelectedItem(months[month]);
-        
-        eDay.removeAllItems();
-        eDay2.removeAllItems();
-        */
 
         // SET THE CALENDAR NUMBERS
         for (i = 1; i <= nod; i++) {
             int row = (i+som-2)/7;
             int column  =  (i+som-2)%7;
             modelCalendarTable.setValueAt(i, row, column);
-                
-            // eDay.addItem(String.valueOf(i));
-            // eDay2.addItem(String.valueOf(i));
         }
 
         calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0), new TableRenderer());
@@ -176,24 +220,15 @@ public class ModuleView extends JFrame {
     class calListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent evt) {
-                /*
-                curCol = calendarTable.getSelectedColumn();
-                curRow = calendarTable.getSelectedRow();
-
-                String val = calendarTable.getValueAt(calendarTable.getSelectedRow(), calendarTable.getSelectedColumn()).toString();
-                val = val.replaceAll("\\D+","");
-                eDay.setSelectedItem(val);
-                eMonth.setSelectedIndex(curMonth - 1);
-                curDay = Integer.valueOf(val.trim());
-                eYear.setSelectedItem(""+curYear);
-                    
-                eDay2.setSelectedItem(val);
-                eMonth2.setSelectedIndex(curMonth - 1);
-                eYear2.setSelectedItem(""+curYear);
-                    
-                controller.updateViews(curYear, curMonth, curDay);
-                */
-
+                int day = Integer.valueOf(calendarTable.getValueAt(calendarTable.getSelectedRow(), calendarTable.getSelectedColumn()).toString().trim());
+                curDate = (monthToday + 1) + "/" + day + "/" + yearToday;
+                agendaLbl.setText("Agenda for " + curDate);
+                schedLbl.setText("Schedule for " + curDate);
+                
+                if (controller instanceof DoctorController) {
+                    ((DoctorBuilder)builder).setTextFields(curDate);
+                    ((DoctorController)controller).updateViews();
+                }
         }
     }
     

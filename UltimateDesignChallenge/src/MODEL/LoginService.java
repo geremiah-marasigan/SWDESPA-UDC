@@ -53,7 +53,7 @@ public class LoginService {
             System.out.println("[User] SELECT SUCCESS!");
 	} catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("[user] SELECT FAILED!");
+            System.out.println("[User] SELECT FAILED!");
             return null;
 	}	
 		

@@ -12,6 +12,8 @@ import java.awt.Container;
 import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.FocusAdapter;
+import java.awt.event.FocusEvent;
 import java.io.IOException;
 import java.util.List;
 import javax.imageio.ImageIO;
@@ -86,11 +88,23 @@ public class LoginView extends JFrame{
         emailTxt.setBounds(300, 130, 100, 30);
         passLbl.setBounds(200, 160, 200, 30);
         passTxt.setBounds(300, 160, 100, 30);
-        submitBtn.setBounds(300,190,70,30);
-        clearBtn.setBounds(300,215,70,30);
+        submitBtn.setBounds(300,190,120,30);
+        clearBtn.setBounds(300,215,120,30);
         
         submitBtn.addActionListener(new submitBtn_Action());
         clearBtn.addActionListener(new clearBtn_Action());
+        emailTxt.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                emailTxt.setCaretPosition(0);
+            }
+        });
+        passTxt.addFocusListener(new FocusAdapter() {
+            @Override
+            public void focusLost(FocusEvent e) {
+                passTxt.setCaretPosition(0);
+            }
+        });
         
         errorLbl.setForeground(Color.red);
         errorLbl.setVisible(false);
@@ -111,14 +125,17 @@ public class LoginView extends JFrame{
             if (email.equalsIgnoreCase("debugD")) {
                 found = true;
                 controller.setBuilder(new DoctorBuilder());
+                foundUser = new User("zach_marasigan@dlsu.edu.ph", "zach", "DOCTOR", "Zach", "Marasigan");
             }
             else if (email.equalsIgnoreCase("debugS")) {
                 found = true;
                 controller.setBuilder(new SecretaryBuilder());
+                foundUser = new User("won_suk_cho@dlsu.edu.ph", "wonsuk", "SECRETARY", "Won Suk", "Cho");
             }
             else if (email.equalsIgnoreCase("debugC")) {
                 found = true;
                 controller.setBuilder(new ClientBuilder());
+                foundUser = new User("charles_navarro@dlsu.edu.ph", "charles", "CLIENT", "Charles", "Navarro");
             }
             
             for (User user : users) {

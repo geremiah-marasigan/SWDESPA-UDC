@@ -5,10 +5,18 @@
  */
 package CONTROLLER;
 
+import MODEL.CalendarDB;
+import MODEL.ClientService;
+import MODEL.DoctorService;
 import MODEL.LoginService;
+import MODEL.ModuleService;
+import MODEL.SecretaryService;
 import MODEL.User;
 import VIEW.Builder;
+import VIEW.ClientBuilder;
+import VIEW.DoctorBuilder;
 import VIEW.LoginView;
+import VIEW.SecretaryBuilder;
 import java.util.List;
 
 /**
@@ -40,6 +48,26 @@ public class LoginController {
     public void constructModule (User user) {
         builder.buildModule();
         builder.buildIcon();
-        builder.buildCustom();
+        builder.buildCustom(user);
+        
+        ModuleController mc = null;
+        ModuleService ms = null;
+        
+        if (builder instanceof DoctorBuilder) {
+            ms = new DoctorService(new CalendarDB());
+            mc = new DoctorController(ms, builder.getView());
+        }
+            
+        else if (builder instanceof SecretaryBuilder) {
+            ms = new SecretaryService(new CalendarDB());
+            mc = new SecretaryController(ms, builder.getView());
+        }
+            
+        else if (builder instanceof ClientBuilder) {
+            ms = new ClientService(new CalendarDB());
+            mc = new ClientController(ms, builder.getView());
+        }
+            
+        mc.start();
     }
 }

@@ -5,6 +5,7 @@
  */
 package VIEW;
 
+import MODEL.User;
 import java.awt.Image;
 import java.io.IOException;
 import javax.imageio.ImageIO;
@@ -30,8 +31,10 @@ public class SecretaryBuilder extends Builder {
     }
 
     @Override
-    public void buildCustom() {
+    public void buildCustom(User user) {
         System.out.println("Building custom SECRETARY components...");
+        module.setTitle("Secretary Module - Secretary " + user.getFirstname());
+        
     }
     
 }

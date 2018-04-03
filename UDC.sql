@@ -1,6 +1,6 @@
 -- MySQL dump 10.13  Distrib 5.7.17, for macos10.12 (x86_64)
 --
--- Host: 127.0.0.1    Database: UDC
+-- Host: localhost    Database: UDC
 -- ------------------------------------------------------
 -- Server version	5.7.20
 
@@ -14,6 +14,59 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+--
+-- Table structure for table `Appointment`
+--
+
+DROP TABLE IF EXISTS `Appointment`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `Appointment` (
+  `Name` varchar(45) NOT NULL,
+  `StartDay` varchar(45) NOT NULL,
+  `EndDay` varchar(45) NOT NULL,
+  `Repeat` varchar(45) NOT NULL,
+  `StartTime` int(11) NOT NULL,
+  `EndTime` int(11) NOT NULL,
+  PRIMARY KEY (`Name`,`StartDay`,`EndDay`,`StartTime`,`EndTime`,`Repeat`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `Appointment`
+--
+
+LOCK TABLES `Appointment` WRITE;
+/*!40000 ALTER TABLE `Appointment` DISABLE KEYS */;
+/*!40000 ALTER TABLE `Appointment` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `DeletedSlots`
+--
+
+DROP TABLE IF EXISTS `DeletedSlots`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `DeletedSlots` (
+  `Name` varchar(45) NOT NULL,
+  `StartDay` varchar(45) NOT NULL,
+  `EndDay` varchar(45) NOT NULL,
+  `StartTime` varchar(45) NOT NULL,
+  `EndTIme` varchar(45) NOT NULL,
+  PRIMARY KEY (`Name`,`StartDay`,`EndDay`,`StartTime`,`EndTIme`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `DeletedSlots`
+--
+
+LOCK TABLES `DeletedSlots` WRITE;
+/*!40000 ALTER TABLE `DeletedSlots` DISABLE KEYS */;
+/*!40000 ALTER TABLE `DeletedSlots` ENABLE KEYS */;
+UNLOCK TABLES;
 
 --
 -- Table structure for table `User`
@@ -51,4 +104,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2018-03-27 10:47:25
+-- Dump completed on 2018-04-03 12:49:14
