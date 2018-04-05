@@ -152,7 +152,6 @@ public class LoginView extends JFrame{
                 passTxt.setText("");
                 errorLbl.setVisible(false);
                 controller.constructModule(foundUser);
-                // setVisible(false);
             }
         }
     }
