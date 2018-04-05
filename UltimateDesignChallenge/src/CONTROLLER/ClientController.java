@@ -24,7 +24,6 @@ public class ClientController extends ModuleController {
     }
     
     public void start () {
-        
         GregorianCalendar cal = new GregorianCalendar();
         int dayBound = cal.get(GregorianCalendar.DAY_OF_MONTH);
         int monthBound = cal.get(GregorianCalendar.MONTH) + 1;
@@ -46,10 +45,5 @@ public class ClientController extends ModuleController {
     
     public void updateViews () {
         view.updateViews(model.getAllAppointments());
-    }
-    
-    @Override
-    public String toString () {
-        return "Succesfully attached ClientController";
     }
 }

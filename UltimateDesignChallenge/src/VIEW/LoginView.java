@@ -89,8 +89,8 @@ public class LoginView extends JFrame{
         emailTxt.setBounds(300, 130, 100, 30);
         passLbl.setBounds(200, 160, 200, 30);
         passTxt.setBounds(300, 160, 100, 30);
-        submitBtn.setBounds(260,190,75,30);
-        clearBtn.setBounds(260,215,75,30);
+        submitBtn.setBounds(260,190,100,30);
+        clearBtn.setBounds(260,215,100,30);
         
         submitBtn.addActionListener(new submitBtn_Action());
         clearBtn.addActionListener(new clearBtn_Action());
@@ -125,17 +125,14 @@ public class LoginView extends JFrame{
             // DEBUGGING PURPOSES
             if (email.equalsIgnoreCase("debugD")) {
                 found = true;
-                controller.setBuilder(new DoctorBuilder());
                 foundUser = new User("zach_marasigan@dlsu.edu.ph", "zach", "DOCTOR", "Zach", "Marasigan");
             }
             else if (email.equalsIgnoreCase("debugS")) {
                 found = true;
-                controller.setBuilder(new SecretaryBuilder());
                 foundUser = new User("won_suk_cho@dlsu.edu.ph", "wonsuk", "SECRETARY", "Won Suk", "Cho");
             }
             else if (email.equalsIgnoreCase("debugC")) {
                 found = true;
-                controller.setBuilder(new ClientBuilder());
                 foundUser = new User("charles_navarro@dlsu.edu.ph", "charles", "CLIENT", "Charles", "Navarro");
             }
             
@@ -143,20 +140,9 @@ public class LoginView extends JFrame{
                 if (user.getEmail().equals(email) && user.getPassword().equals(pass)) {
                     found = true;
                     foundUser = user;
-                    switch (user.getType()) {
-                        case "DOCTOR":
-                            controller.setBuilder(new DoctorBuilder());
-                            break;
-                        case "SECRETARY":
-                            controller.setBuilder(new SecretaryBuilder());
-                            break;
-                        case "CLIENT":
-                            controller.setBuilder(new ClientBuilder());
-                            break;
-                    }
                 }
             }
-            
+          
             if (!found) {
                 errorLbl.setText("INVALID CREDENTIALS");
                 errorLbl.setVisible(true);

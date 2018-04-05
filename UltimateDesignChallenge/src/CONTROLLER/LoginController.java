@@ -5,18 +5,12 @@
  */
 package CONTROLLER;
 
-import MODEL.CalendarDB;
-import MODEL.ClientService;
-import MODEL.DoctorService;
 import MODEL.LoginService;
 import MODEL.ModuleService;
-import MODEL.SecretaryService;
 import MODEL.User;
-import VIEW.Builder;
-import VIEW.ClientBuilder;
-import VIEW.DoctorBuilder;
 import VIEW.LoginView;
-import VIEW.SecretaryBuilder;
+import VIEW.ModuleFactory;
+import VIEW.ModuleView;
 import java.util.List;
 
 /**
@@ -26,11 +20,12 @@ import java.util.List;
 public class LoginController {
     private LoginService model;
     private LoginView view;
-    private Builder builder;
+    private ModuleFactory factory;
 	
     public LoginController (LoginService model, LoginView view) {
         this.model = model;
         this.view = view;
+        factory = new ModuleFactory();
     }
 
     public void start() {
@@ -41,33 +36,11 @@ public class LoginController {
         return model.getAll();
     }    
     
-    public void setBuilder (Builder b) {
-        this.builder = b;
-    }
-    
-    public void constructModule (User user) {
-        builder.buildModule();
-        builder.buildIcon();
-        builder.buildCustom(user);
-        
-        ModuleController mc = null;
-        ModuleService ms = null;
-        
-        if (builder instanceof DoctorBuilder) {
-            ms = new DoctorService(new CalendarDB());
-            mc = new DoctorController(ms, builder.getView());
-        }
-            
-        else if (builder instanceof SecretaryBuilder) {
-            ms = new SecretaryService(new CalendarDB());
-            mc = new SecretaryController(ms, builder.getView());
-        }
-            
-        else if (builder instanceof ClientBuilder) {
-            ms = new ClientService(new CalendarDB());
-            mc = new ClientController(ms, builder.getView());
-        }
-            
+    public void constructModule (User user) {   
+        ModuleView mv = factory.getView(user.getType());
+        ModuleService ms = factory.getModel(user.getType());
+        ModuleController mc = factory.getController(user.getType(), ms, mv);
+        mv.setUser(user);
         mc.start();
     }
 }

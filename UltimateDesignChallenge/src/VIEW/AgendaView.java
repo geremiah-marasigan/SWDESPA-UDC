@@ -82,7 +82,7 @@ public class AgendaView extends JPanel {
 
         if (items.isEmpty()) {
             if (controller instanceof DoctorController)
-                items.add(AgendaItem.createEmpty());
+                items.add(AgendaItem.createEmptyDoctor());
             if (controller instanceof ClientController)
                 items.add(AgendaItem.createEmptyClient());
             add(items.get(0));

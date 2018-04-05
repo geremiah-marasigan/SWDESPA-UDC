@@ -20,11 +20,5 @@ public class SecretaryController extends ModuleController{
     
     public void start () {
         view.setController(this);
-        // view.setScheduleItems();
-    }
-    
-    @Override
-    public String toString () {
-        return "Succesfully attached SecretaryController";
     }
 }

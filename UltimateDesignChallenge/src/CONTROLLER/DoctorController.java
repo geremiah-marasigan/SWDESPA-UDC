@@ -16,7 +16,6 @@ import java.util.GregorianCalendar;
  * @author ianona
  */
 public class DoctorController extends ModuleController {
-    
     public DoctorController(ModuleService model, ModuleView view) {
         super(model, view);
     }
@@ -39,7 +38,6 @@ public class DoctorController extends ModuleController {
         updateViews();
     }
     
-    
     public void deleteAppointment(Appointment app) {
         ((DoctorService)model).deleteAppointment(app);
         updateViews();
@@ -47,10 +45,5 @@ public class DoctorController extends ModuleController {
     
     public void updateViews () {
         view.updateViews(model.getAllAppointments());
-    }
-    
-    @Override
-    public String toString () {
-        return "Succesfully attached DoctorController";
     }
 }
