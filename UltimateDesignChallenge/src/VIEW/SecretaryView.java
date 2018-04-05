@@ -20,6 +20,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
@@ -56,6 +57,10 @@ public class SecretaryView extends JFrame implements ModuleView {
     private ScheduleView sv;
     private JLabel agendaLbl, schedLbl;
     private String curDate;
+    
+    /**** Notification ****/
+    private JButton bttnNotify, bttnNotifyAll;
+    private JComboBox cmbNotify;
     
     public SecretaryView() {
         this.setSize(900, 660);
@@ -111,6 +116,24 @@ public class SecretaryView extends JFrame implements ModuleView {
         
         mainPane.add(scheduleScroll);
         mainPane.add(schedLbl);
+        
+        bttnNotifyAll = new JButton("Notify All");
+        bttnNotifyAll.setBounds(10,400, 100, 25);
+        mainPane.add(bttnNotifyAll);
+        
+        bttnNotify = new JButton("Notify");
+        bttnNotify.setBounds(10,450, 100, 25);
+        mainPane.add(bttnNotify);
+        
+        List<User> docList = ((SecretaryController)controller).getDoctors();
+        User[] docArray = new User[docList.size()];
+        docList.toArray(docArray);
+        String[] docNames = new String[docList.size()];
+        for(int i = 0; i < docList.size(); i++)
+            docNames[i] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
+        cmbNotify = new JComboBox(docNames);
+        cmbNotify.setBounds(115,450, 100, 25);
+        mainPane.add(cmbNotify);
     }
 
     @Override

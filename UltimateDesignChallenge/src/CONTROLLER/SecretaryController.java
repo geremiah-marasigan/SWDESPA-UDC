@@ -6,7 +6,11 @@
 package CONTROLLER;
 
 import MODEL.ModuleService;
+import MODEL.SecretaryService;
+import MODEL.User;
 import VIEW.ModuleView;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -20,5 +24,16 @@ public class SecretaryController extends ModuleController{
     
     public void start () {
         view.setController(this);
+    }
+    
+    public List<User> getDoctors(){
+        List<User> users = ((SecretaryService)model).getAllUsers();
+        List<User> doctors = new ArrayList<>();
+        for(User user: users){
+            if("DOCTOR".equals(user.getType())){
+                doctors.add(user);
+            }
+        }
+        return doctors;
     }
 }
