@@ -121,7 +121,7 @@ public class ClientView extends JFrame implements ModuleView {
 
     @Override
     public void setScheduleItems(List<Appointment> apps) {
-        sv.setItems();
+        sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate);
     }
 
     @Override
@@ -132,6 +132,7 @@ public class ClientView extends JFrame implements ModuleView {
     @Override
     public void updateViews(List<Appointment> apps) {
         av.setItems(apps, curDate);
+        sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate);
     }
 
     @Override
