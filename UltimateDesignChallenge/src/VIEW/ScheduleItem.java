@@ -6,6 +6,7 @@
 package VIEW;
 
 import CONTROLLER.ModuleController;
+import MODEL.Appointment;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -20,25 +21,59 @@ import javax.swing.JPanel;
  *
  * @author ianona
  */
-public class ScheduleItem extends JPanel{
+public class ScheduleItem extends JPanel {
+
     private ModuleController controller;
-    
+
     private JLabel time;
-    
-    public ScheduleItem() {        
+    private JLabel name;
+
+    public ScheduleItem() {
         time = new JLabel();
-        
+        name = new JLabel();
+
         this.add(time);
-        
-        setPreferredSize(new Dimension(260,45));
+        this.add(name);
+
+        setPreferredSize(new Dimension(260, 45));
         setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
     }
-    
-    public ScheduleItem (ModuleController c, String time) {
+
+    public ScheduleItem(ModuleController c, String time, boolean first, Appointment app, String type) {
+        this();
+        System.out.println(type);
+        this.controller = c;
+        if (first) {
+            System.out.println("First");
+            if (type.equals("doctor")) {
+                System.out.println("ENTERED DOCTOR");
+                this.name.setText(app.getName());
+            }
+            else {
+                System.out.println("ENTERED TAKEN");
+                this.name.setText("Taken");
+            }
+        } else {
+            this.name.setText("");
+        }
+
+        if (type.equals("doctor")) {
+            this.setBackground(new Color(186, 255, 133));
+        } else if (type.equals("client")) {
+            this.setBackground(Color.RED);
+        } else {
+            this.setBackground(Color.white);
+        }
+
+        this.time.setText(time);
+    }
+
+    public ScheduleItem(ModuleController c, String time) {
         this();
         this.controller = c;
         this.setBackground(Color.white);
 
         this.time.setText(time);
+        this.name.setText("");
     }
 }

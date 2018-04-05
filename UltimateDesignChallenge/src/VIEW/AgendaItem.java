@@ -5,6 +5,7 @@
  */
 package VIEW;
 
+import CONTROLLER.ClientController;
 import CONTROLLER.DoctorController;
 import CONTROLLER.ModuleController;
 import MODEL.Appointment;
@@ -74,12 +75,25 @@ public class AgendaItem extends JPanel{
             timeLbl.setText("" + app.getStartTime() + " - " + app.getEndTime());
             trashBtn.setVisible(true);
         }
-        
+        else if (controller instanceof ClientController){
+            if (app.getStartDay().equals(app.getEndDay()))
+                appLbl.setText(app.getStartDay());
+            else
+                appLbl.setText(app.getStartDay() + " - " + app.getEndDay());
+            timeLbl.setText(app.getStartTime() + " - " + app.getEndTime());
+        }
     }
         
    public static final AgendaItem createEmpty() {
 	AgendaItem item = new AgendaItem();
 	item.appLbl.setText("NOTHING FOR TODAY");
+        item.setBackground(new Color(186,184,183));
+	return item;
+    }
+   
+   public static final AgendaItem createEmptyClient() {
+	AgendaItem item = new AgendaItem();
+	item.appLbl.setText("NO APPOINTMENTS TODAY");
         item.setBackground(new Color(186,184,183));
 	return item;
     }

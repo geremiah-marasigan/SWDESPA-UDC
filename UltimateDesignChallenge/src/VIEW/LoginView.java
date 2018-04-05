@@ -57,6 +57,7 @@ public class LoginView extends JFrame{
         
         mainPane = this.getContentPane();
         mainPane.setLayout(null);
+        this.setLocationRelativeTo(null);
         
         emailLbl = new JLabel("Email: ");
         passLbl = new JLabel("Password: ");
@@ -88,8 +89,8 @@ public class LoginView extends JFrame{
         emailTxt.setBounds(300, 130, 100, 30);
         passLbl.setBounds(200, 160, 200, 30);
         passTxt.setBounds(300, 160, 100, 30);
-        submitBtn.setBounds(300,190,120,30);
-        clearBtn.setBounds(300,215,120,30);
+        submitBtn.setBounds(260,190,75,30);
+        clearBtn.setBounds(260,215,75,30);
         
         submitBtn.addActionListener(new submitBtn_Action());
         clearBtn.addActionListener(new clearBtn_Action());

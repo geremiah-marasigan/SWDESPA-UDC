@@ -5,6 +5,7 @@
  */
 package VIEW;
 
+import CONTROLLER.ClientController;
 import CONTROLLER.DoctorController;
 import CONTROLLER.ModuleController;
 import MODEL.Appointment;
@@ -62,6 +63,8 @@ public class ModuleView extends JFrame {
         mainPane = this.getContentPane();
         mainPane.setBackground(Color.WHITE);
         mainPane.setLayout(null);
+        this.setLocationRelativeTo(null);
+        this.setDefaultCloseOperation(HIDE_ON_CLOSE);
         this.setVisible(true);
         this.setResizable(false);
         
@@ -105,7 +108,10 @@ public class ModuleView extends JFrame {
     }
     
     public void setScheduleItems (List<Appointment> apps) {
-        sv.setItems();
+        if (controller instanceof ClientController)
+            sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate);
+        else
+            sv.setItems();
     }
     
     public void setAgendaItems (List<Appointment> apps, String date) {
@@ -114,6 +120,8 @@ public class ModuleView extends JFrame {
     
     public void updateViews (List<Appointment> apps) {
         av.setItems(apps, curDate);
+        if (controller instanceof ClientController)
+            sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate);
     }
     
     public void initCalendar() {
@@ -228,6 +236,9 @@ public class ModuleView extends JFrame {
                 if (controller instanceof DoctorController) {
                     ((DoctorBuilder)builder).setTextFields(curDate);
                     ((DoctorController)controller).updateViews();
+                }
+                else if(controller instanceof ClientController){
+                    ((ClientController)controller).updateViews();
                 }
         }
     }

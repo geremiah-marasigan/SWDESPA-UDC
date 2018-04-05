@@ -26,29 +26,30 @@ import javax.swing.JPanel;
  *
  * @author ianona
  */
-public class AgendaView extends JPanel{
+public class AgendaView extends JPanel {
+
     private ModuleController controller;
     private List<AgendaItem> items;
     private User user;
-    
-    public AgendaView (ModuleController controller) {
+
+    public AgendaView(ModuleController controller) {
         this.controller = controller;
         items = new ArrayList<AgendaItem>();
         setBackground(Color.white);
         setLayout(new VerticalFlowLayout(VerticalFlowLayout.LEFT, VerticalFlowLayout.TOP, 0, 0));
     }
-    
-    public void setUser (User user) {
+
+    public void setUser(User user) {
         this.user = user;
     }
-    
-    public void setItems (List<Appointment> apps, String date) {
+
+    public void setItems(List<Appointment> apps, String date) {
         for (int i = 0; i < items.size(); i++) {
             remove(items.get(i));
         }
-			
+
         items.clear();
-        
+
         // DOCTOR (FILTER BY NAME)
         if (controller instanceof DoctorController) {
             for (int i = 0; i < apps.size(); i++) {
@@ -56,50 +57,62 @@ public class AgendaView extends JPanel{
                     items.add(new AgendaItem(controller, apps.get(i)));
                 }
             }
-        }
-            
-        // SECRETARY (CAN SEE EVERYONE)
+        } // SECRETARY (CAN SEE EVERYONE)
         else if (controller instanceof SecretaryController) {
-                
-        }
-            
-        // CLIENT
+
+        } // CLIENT (CAN SEE ALL HIS/HER APPOINTMENTS)
         else if (controller instanceof ClientController) {
-                
+            List<User> tempUsers = ((ClientController) controller).getAllUsers();
+            for (Appointment app : apps) {
+                System.out.println(app.getName() + " NAME OF APPOINTMENT ");
+                for (User user : tempUsers) {
+                    System.out.println(user.getFirstname());
+                    if (app.getName().equals(this.user.getFirstname()) && checkDate(app.getStartDay(), app.getEndDay(), date, app.getRepeat()) && user.getType().equals("CLIENT")) {
+                        System.out.println("ENTERED");
+                        items.add(new AgendaItem(controller, app));
+                    }
+                }
+            }
         }
-            
+
         // ADDS PANELS TO THE GUI
         for (int i = 0; i < items.size(); i++) {
             add(items.get(i));
         }
-        
+
         if (items.isEmpty()) {
-            items.add(AgendaItem.createEmpty());
+            if (controller instanceof DoctorController)
+                items.add(AgendaItem.createEmpty());
+            if (controller instanceof ClientController)
+                items.add(AgendaItem.createEmptyClient());
             add(items.get(0));
         }
-        
+
         setPreferredSize(new Dimension(390, items.size() * 40 + 30));
-        
+
         revalidate();
         repaint();
     }
-    
-    public boolean checkDate (String startDay, String endDay, String curDay, String repeat) {
+
+    public boolean checkDate(String startDay, String endDay, String curDay, String repeat) {
         switch (repeat) {
             case "None":
-                if (startDay.equalsIgnoreCase(curDay))
+                if (startDay.equalsIgnoreCase(curDay)) {
                     return true;
+                }
             case "Daily":
-                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0)
+                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0) {
                     return true;
+                }
             case "Monthly":
-                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0 && daysBetween(startDay, curDay) % 31 == 0)
+                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0 && daysBetween(startDay, curDay) % 31 == 0) {
                     return true;
+                }
         }
         return false;
     }
-    
-    public long daysBetween (String date1, String date2) {
+
+    public long daysBetween(String date1, String date2) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         LocalDate firstDate = LocalDate.parse(date1, formatter);
         LocalDate secondDate = LocalDate.parse(date2, formatter);
