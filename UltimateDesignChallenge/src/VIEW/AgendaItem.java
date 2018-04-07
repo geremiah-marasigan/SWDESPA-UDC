@@ -8,6 +8,7 @@ package VIEW;
 import CONTROLLER.ClientController;
 import CONTROLLER.DoctorController;
 import CONTROLLER.ModuleController;
+import CONTROLLER.SecretaryController;
 import MODEL.Appointment;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -76,6 +77,15 @@ public class AgendaItem extends JPanel{
                 appLbl.setText(app.getStartDay());
             else
                 appLbl.setText(app.getStartDay() + " - " + app.getEndDay());
+            timeLbl.setText(app.getStartTime() + " - " + app.getEndTime());
+        } else if (controller instanceof SecretaryController){
+            if (app.getStartDay().equals(app.getEndDay())){
+                System.out.println(app.getStartDay());
+                appLbl.setText(app.getStartDay());
+            }
+            else
+                appLbl.setText(app.getStartDay() + " - " + app.getEndDay());
+            trashBtn.setVisible(true);
             timeLbl.setText(app.getStartTime() + " - " + app.getEndTime());
         }
     }

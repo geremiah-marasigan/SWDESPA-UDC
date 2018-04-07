@@ -59,7 +59,12 @@ public class AgendaView extends JPanel {
             }
         } // SECRETARY (CAN SEE EVERYONE)
         else if (controller instanceof SecretaryController) {
-
+            for (int i = 0; i < apps.size(); i++) {
+                System.out.println("Sammie is " + date);
+                if (checkDate(apps.get(i).getStartDay(), apps.get(i).getEndDay(), date, apps.get(i).getRepeat())) {
+                    items.add(new AgendaItem(controller, apps.get(i)));
+                }
+            }
         } // CLIENT (CAN SEE ALL HIS/HER APPOINTMENTS)
         else if (controller instanceof ClientController) {
             List<User> tempUsers = ((ClientController) controller).getAllUsers();

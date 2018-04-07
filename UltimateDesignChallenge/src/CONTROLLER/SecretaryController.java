@@ -36,4 +36,14 @@ public class SecretaryController extends ModuleController{
         }
         return doctors;
     }
+    
+    public void updateViews () {
+        view.updateViews(model.getAllAppointments());
+    }
+    
+    
+    public void notifyAllDoctors(){
+        
+        
+    }
 }

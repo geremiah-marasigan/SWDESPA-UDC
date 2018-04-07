@@ -17,6 +17,7 @@ import java.awt.event.MouseEvent;
 import java.io.IOException;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.TimerTask;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -61,6 +62,13 @@ public class SecretaryView extends JFrame implements ModuleView {
     /**** Notification ****/
     private JButton bttnNotify, bttnNotifyAll;
     private JComboBox cmbNotify;
+    
+    /**** Timer ****/
+    public java.util.Timer timer;
+    public TimerTask timerTask;
+    
+    /**** DocList ****/
+    List<User> docList;
     
     public SecretaryView() {
         this.setSize(900, 660);
@@ -125,7 +133,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         bttnNotify.setBounds(10,450, 100, 25);
         mainPane.add(bttnNotify);
         
-        List<User> docList = ((SecretaryController)controller).getDoctors();
+        this.docList = ((SecretaryController)controller).getDoctors();
         User[] docArray = new User[docList.size()];
         docList.toArray(docArray);
         String[] docNames = new String[docList.size()];
@@ -134,6 +142,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         cmbNotify = new JComboBox(docNames);
         cmbNotify.setBounds(115,450, 100, 25);
         mainPane.add(cmbNotify);
+        runTimer();
     }
 
     @Override
@@ -154,9 +163,20 @@ public class SecretaryView extends JFrame implements ModuleView {
 
     @Override
     public void updateViews(List<Appointment> apps) {
+        sv.setItems(apps, docList, curDate);
         av.setItems(apps, curDate);
     }
 
+    public void runTimer(){
+        timerTask = new TimerTask(){
+            @Override
+            public void run(){
+                System.out.println("test");
+            }
+        };
+        timer = new java.util.Timer(true);
+        timer.scheduleAtFixedRate(timerTask, 1000, 1000);
+    }
     @Override
     public void initCalendar() {
         modelCalendarTable = new DefaultTableModel() {
@@ -267,6 +287,7 @@ public class SecretaryView extends JFrame implements ModuleView {
                 curDate = (monthToday + 1) + "/" + day + "/" + yearToday;
                 agendaLbl.setText("Agenda for " + curDate);
                 schedLbl.setText("Schedule for " + curDate);
+                ((SecretaryController)controller).updateViews();
         }
     }
     
