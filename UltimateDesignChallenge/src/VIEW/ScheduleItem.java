@@ -47,7 +47,7 @@ public class ScheduleItem extends JPanel {
             System.out.println("First");
             if (type.equals("doctor")) {
                 System.out.println("ENTERED DOCTOR");
-                this.name.setText(app.getName());
+                this.name.setText("Dr. " + app.getName());
             }
             else {
                 System.out.println("ENTERED TAKEN");

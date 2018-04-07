@@ -32,12 +32,13 @@ public class AgendaItem extends JPanel{
     private Appointment app;
     private ModuleController controller;
     
-    private JLabel appLbl, timeLbl;
+    private JLabel appLbl, timeLbl, nameLbl;
     private JButton trashBtn;
     
     public AgendaItem() {
         appLbl = new JLabel();
         timeLbl = new JLabel();
+        nameLbl = new JLabel();
         trashBtn = new JButton();
         trashBtn.addActionListener(new trashBtn_Action());
         
@@ -52,6 +53,7 @@ public class AgendaItem extends JPanel{
         timeLbl.setPreferredSize(new Dimension(80,40));
         
         add(appLbl);
+        add(nameLbl);
         add(timeLbl);
         add(trashBtn);
         trashBtn.setVisible(false);
@@ -87,6 +89,7 @@ public class AgendaItem extends JPanel{
                 appLbl.setText(app.getStartDay() + " - " + app.getEndDay());
             trashBtn.setVisible(true);
             timeLbl.setText(app.getStartTime() + " - " + app.getEndTime());
+            nameLbl.setText("Dr. " + app.getName());
         }
     }
         
