@@ -134,6 +134,11 @@ public class ClientView extends JFrame implements ModuleView {
         av.setItems(apps, curDate);
         sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate);
     }
+    
+    @Override
+    public void filterViews(List<Appointment> apps, String name) {
+        
+    }
 
     @Override
     public void initCalendar() {

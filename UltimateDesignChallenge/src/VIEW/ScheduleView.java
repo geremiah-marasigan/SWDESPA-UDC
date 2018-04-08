@@ -124,4 +124,77 @@ public class ScheduleView extends JPanel {
         revalidate();
         repaint();
     }
+    
+    public void filterItems(List<Appointment> apps, List<User> users, String curDate, String name)
+    { 
+        for (int i = 0; i < items.size(); i++) {
+            remove(items.get(i));
+        }
+
+        items.clear();
+        boolean first = false;
+        Appointment temp = null;
+        String type = "nothing";
+        for (int hour = 0; hour < 24; hour++) {
+            for (int min = 0; min < 60; min += 30) {
+                String hourString = String.valueOf(hour);
+                if (hourString.length() == 1) {
+                    hourString = "0" + hourString;
+                }
+                String minString = String.valueOf(min);
+                if (minString.length() == 1) {
+                    minString = "0" + minString;
+                }
+                String time = hourString + ":" + minString;
+                
+                if(name.equals("All"))
+                {
+                    setItems(apps, users, curDate);
+                }
+                
+                for (Appointment app : apps) {
+                    
+                    if (app.getName().equals(name))
+                    {
+                        if (app.getStartTime() == Integer.valueOf(time.replaceAll(":", "")) && (app.getStartDay().equals(curDate) || app.getEndDay().equals(curDate))) {
+                            first = true;
+                            temp = app;
+                            System.out.println(time + " ENTERED");
+                            for (User user:users) {
+                                if (app.getName().equals(user.getFirstname()) && user.getType().equals("DOCTOR")) {
+                                    type = "doctor";
+                                }
+                                if (app.getName().equals(user.getFirstname()) && user.getType().equals("CLIENT")) {
+                                    type = "client";
+                                }
+                            }
+                            break;
+                        } else if (app.getEndTime() == Integer.valueOf(time.replaceAll(":", "")) && (app.getStartDay().equals(curDate) || app.getEndDay().equals(curDate))) {
+                            System.out.println(time + " LEFT");
+                            if (type.equals("client")){
+                                type = "doctor";
+                                first = true;
+                            }
+                            else
+                                type = "nothing";
+                            
+                        } else {
+                            first = false;
+                        }
+                    }
+                }
+                items.add(new ScheduleItem(controller, time, first, temp, type));
+            }
+        }
+
+        for (int i = 0; i < items.size(); i++) {
+            add(items.get(i));
+        }
+
+        setPreferredSize(new Dimension(260, items.size() * 45 + 30));
+
+        revalidate();
+        repaint();
+        
+    }
 }

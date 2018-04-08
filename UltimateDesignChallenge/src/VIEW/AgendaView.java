@@ -98,6 +98,39 @@ public class AgendaView extends JPanel {
         revalidate();
         repaint();
     }
+    
+    public void filterItems(List<Appointment> apps, String date, String name)
+    {       
+        if (controller instanceof SecretaryController) { //SECRETARY VIEW
+            for (int i = 0; i < items.size(); i++) {
+               remove(items.get(i));
+            }
+
+            items.clear();           
+            
+            for (int i = 0; i < apps.size(); i++) {
+                System.out.println("Date is " + date);
+                if (checkDate(apps.get(i).getStartDay(), apps.get(i).getEndDay(), date, apps.get(i).getRepeat())) {
+                    if(name.equals("All")) //if secretary selects "All" doctors view
+                    {
+                         items.add(new AgendaItem(controller, apps.get(i)));
+                    }
+                    else if (apps.get(i).getName().equals(name)) //if secretary selects a specific doctor view
+                         {
+                            items.add(new AgendaItem(controller, apps.get(i)));
+                         }
+                }     
+            }
+            
+            // ADDS PANEL TO THE GUI
+            for (int i = 0; i < items.size(); i++) {
+                add(items.get(i));
+            }
+            
+            revalidate();
+            repaint();
+        }
+    }
 
     public boolean checkDate(String startDay, String endDay, String curDay, String repeat) {
         switch (repeat) {

@@ -147,6 +147,11 @@ public class DoctorView extends JFrame implements ModuleView {
     public void updateViews(List<Appointment> apps) {
         av.setItems(apps, curDate);
     }
+ 
+    @Override
+    public void filterViews(List<Appointment> apps, String name) {
+        
+    }
 
     @Override
     public void initCalendar() {
@@ -428,6 +433,9 @@ public class DoctorView extends JFrame implements ModuleView {
             int endT = Integer.parseInt(eTime.getSelectedItem().toString().replace(":", ""));
             
             director.setTimeslotBuilder(new AppointmentSlotBuilder(),controller);
+            
+            //String fullName = user.getFirstname() + " " + user.getLastname();
+           
             if (director.addAppSlot(user.getFirstname(), startD, endD, choice, startT, endT)) {
                 pnlApp.setVisible(false); 
                 errorMsg.setVisible(false);

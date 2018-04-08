@@ -45,11 +45,12 @@ public class ScheduleItem extends JPanel {
         this.controller = c;
         if (first) {
             System.out.println("First");
+            
             if (type.equals("doctor")) {
                 System.out.println("ENTERED DOCTOR");
                 this.name.setText("Dr. " + app.getName());
             }
-            else {
+            else if (type.equals("client")){
                 System.out.println("ENTERED TAKEN");
                 this.name.setText("Taken");
             }

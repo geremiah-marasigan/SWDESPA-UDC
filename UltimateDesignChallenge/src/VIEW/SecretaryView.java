@@ -138,11 +138,12 @@ public class SecretaryView extends JFrame implements ModuleView {
         User[] docArray = new User[docList.size()];
         docList.toArray(docArray);
         String[] docNames = new String[docList.size()];
-        String[] docAgenda = new String[docList.size() + 1];
+        String[] docAgenda = new String[docList.size() + 1]; //names + "All"
         docAgenda[0] = "All";
         for(int i = 0; i < docList.size(); i++){
             docNames[i] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
-            docAgenda[i+1] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
+            //docAgenda[i+1] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
+            docAgenda[i+1] = docArray[i].getFirstname();
         }
         cmbNotify = new JComboBox(docNames);
         cmbNotify.setBounds(115,450, 100, 25);
@@ -159,6 +160,9 @@ public class SecretaryView extends JFrame implements ModuleView {
                         ((SecretaryController)controller).notifyDoctor(docArray[cmbNotify.getSelectedIndex()]);
                     }
         });
+        
+        cmbAgenda.addActionListener(new cmbAgenda_Action());
+        
     }
 
     @Override
@@ -181,6 +185,12 @@ public class SecretaryView extends JFrame implements ModuleView {
     public void updateViews(List<Appointment> apps) {
         sv.setItems(apps, docList, curDate);
         av.setItems(apps, curDate);
+    }
+    
+    @Override
+    public void filterViews(List<Appointment> apps, String name) {
+        sv.filterItems(apps, docList, curDate, name);
+        av.filterItems(apps, curDate, name);
     }
 
     public void runTimer(){
@@ -303,7 +313,17 @@ public class SecretaryView extends JFrame implements ModuleView {
                 curDate = (monthToday + 1) + "/" + day + "/" + yearToday;
                 agendaLbl.setText("Agenda for " + curDate);
                 schedLbl.setText("Schedule for " + curDate);
+                cmbAgenda.setSelectedIndex(0);
                 ((SecretaryController)controller).updateViews();
+        }
+    }
+    
+    class cmbAgenda_Action implements ActionListener{
+        @Override
+        public void actionPerformed (ActionEvent e){
+            String selectedDoc = "";
+            selectedDoc = cmbAgenda.getSelectedItem().toString();
+            ((SecretaryController)controller).filterViews(selectedDoc);
         }
     }
     
