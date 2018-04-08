@@ -20,11 +20,13 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import static javax.swing.WindowConstants.HIDE_ON_CLOSE;
 import javax.swing.table.DefaultTableModel;
@@ -38,6 +40,7 @@ public class ClientView extends JFrame implements ModuleView {
     public ModuleController controller;
     private User user;
     private JLabel icon;
+    private Director director;
     
     /**** Calendar Table Components ***/
     public JTable calendarTable;
@@ -57,9 +60,16 @@ public class ClientView extends JFrame implements ModuleView {
     private JLabel agendaLbl, schedLbl;
     private String curDate;
     
+    /**** Tools taken from Ian ****/
+    private JButton btnApp,btnFltr;
+    private JPanel pnlApp;
+    private JLabel sDayLbl, eDayLbl, sTimeLbl, eTimeLbl, repeatLbl, errorMsg;
+    private JTextField sDay, eDay;
+    private JComboBox sTime, eTime, repeat, doctors;
+    private JButton btnAdd, btnCancel;
+    
     public ClientView() {
         this.setSize(900, 660);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         mainPane = this.getContentPane();
         mainPane.setBackground(Color.WHITE);
         mainPane.setLayout(null);
@@ -70,6 +80,10 @@ public class ClientView extends JFrame implements ModuleView {
         
         buildIcon();
         initCalendar();
+        
+        initTools();
+        
+        director = new Director();
     }
     
     @Override
@@ -111,6 +125,11 @@ public class ClientView extends JFrame implements ModuleView {
         
         mainPane.add(scheduleScroll);
         mainPane.add(schedLbl);
+        
+        for (User user: ((ClientController)controller).getAllUsers()){
+            if (user.getType().equals("DOCTOR"))
+                doctors.addItem("Dr. " + user.getFirstname());
+        }
     }
 
     @Override
@@ -132,7 +151,11 @@ public class ClientView extends JFrame implements ModuleView {
     @Override
     public void updateViews(List<Appointment> apps) {
         av.setItems(apps, curDate);
-        sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate);
+        String temp = (String) doctors.getSelectedItem();
+            if(temp.equals("All Doctors"))
+                sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate);
+            else
+                sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate, temp.split(" ")[1]);
     }
     
     @Override
@@ -210,7 +233,110 @@ public class ClientView extends JFrame implements ModuleView {
         calendarPanel.add(btnNextYear);
         mainPane.add(calendarPanel);
     }
-
+    
+    public void initTools() {
+        doctors = new JComboBox();
+        doctors.addItem("All Doctors");
+        doctors.setBounds(60,380,150,50);
+        doctors.addActionListener(new btnFltr_Action());
+        btnApp = new JButton();
+        btnApp.setBounds(10,380, 50, 50);
+        btnApp.addActionListener(new btnApp_Action());
+        mainPane.add(btnApp);
+        mainPane.add(doctors);    
+        try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnApp.png")));
+            btnApp.setIcon(new ImageIcon(icon.getImage().getScaledInstance(40,40, Image.SCALE_DEFAULT)));
+        } catch(IOException e) {
+            System.out.println("FILE NOT FOUND");
+        }
+        
+        pnlApp = new JPanel(null);
+        pnlApp.setBounds(220, 495, 390, 125);
+        pnlApp.setBackground(Color.LIGHT_GRAY);
+        mainPane.add(pnlApp);
+        pnlApp.setVisible(false);
+        
+        btnAdd = new JButton("Set Slots");
+        btnAdd.addActionListener(new btnAdd_Action());
+        btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                pnlApp.setVisible(false);
+            }
+        });
+        sDay = new JTextField(10);
+        eDay = new JTextField(10);
+        eDay.setVisible(false);
+        sTime = new JComboBox();
+        eTime = new JComboBox();
+        for (int hour = 0; hour < 24; hour++) {
+            for (int min = 0; min < 60; min += 30) {
+                String hourString = String.valueOf(hour);
+                if (hourString.length() == 1)
+                    hourString = "0"+hourString;
+                String minString = String.valueOf(min);
+                if (minString.length() == 1)
+                    minString = "0"+minString;
+                String time = hourString + ":" + minString;
+                sTime.addItem(time);
+                eTime.addItem(time);
+            }
+        }
+        String[] repeatOptions = {"None", "Daily", "Monthly"};
+        repeat = new JComboBox(repeatOptions);
+        repeat.setSelectedIndex(0);
+        repeat.addActionListener(new repeat_Action());
+        
+        sDayLbl = new JLabel("Start Day: ");
+        eDayLbl = new JLabel("End Day: ");
+        eDayLbl.setVisible(false);
+        sTimeLbl = new JLabel("Start Time: ");
+        eTimeLbl = new JLabel("End Time: ");
+        repeatLbl = new JLabel("Repeat: ");
+        errorMsg = new JLabel();
+        errorMsg.setForeground(Color.red);
+        errorMsg.setVisible(false);
+        
+        GregorianCalendar cal = new GregorianCalendar();
+        int dayBound = cal.get(GregorianCalendar.DAY_OF_MONTH);
+        int monthBound = cal.get(GregorianCalendar.MONTH) + 1;
+        int yearBound = cal.get(GregorianCalendar.YEAR);
+        curDate = monthBound + "/" + dayBound + "/" + yearBound;
+        sDay.setText(curDate);
+        eDay.setText(curDate);
+        
+        sDayLbl.setBounds(5, 5, 100, 25);
+        sTimeLbl.setBounds(5, 30, 100, 25);
+        eTimeLbl.setBounds(5, 55, 100, 25);
+        repeatLbl.setBounds(210, 5, 70, 25);
+        eDayLbl.setBounds(210, 30, 70, 25);
+        errorMsg.setBounds(105, 90, 70, 25);
+        
+        sDay.setBounds(105, 5, 100, 25);
+        sTime.setBounds(105, 30, 100, 25);
+        eTime.setBounds(105, 55, 100, 25);
+        repeat.setBounds(280, 5, 100, 25);
+        eDay.setBounds(280, 30, 100, 25);
+        btnAdd.setBounds(280, 60, 100,30);
+        btnCancel.setBounds(280, 90, 100,30);
+        
+        pnlApp.add(btnAdd);
+        pnlApp.add(btnCancel);
+        pnlApp.add(sDay);
+        pnlApp.add(eDay);
+        pnlApp.add(sTime);
+        pnlApp.add(eTime);
+        pnlApp.add(repeat);
+        
+        pnlApp.add(sDayLbl);
+        pnlApp.add(eDayLbl);
+        pnlApp.add(sTimeLbl);
+        pnlApp.add(eTimeLbl);
+        pnlApp.add(repeatLbl);
+        pnlApp.add(errorMsg);
+    }
+    
     @Override
     public void refreshCalendar(int month, int year) {
         int nod, som, i, j;
@@ -252,6 +378,67 @@ public class ClientView extends JFrame implements ModuleView {
                 schedLbl.setText("Schedule for " + curDate);
 
                 ((ClientController)controller).updateViews();
+                sDay.setText(curDate);
+                eDay.setText(curDate);
+        }
+    }
+    
+    class btnFltr_Action implements ActionListener {
+        @Override
+        public void actionPerformed (ActionEvent e) {
+            String temp = (String) doctors.getSelectedItem();
+            if(temp.equals("All Doctors"))
+                sv.setItems(((ClientController)controller).getAllAppointments(), ((ClientController)controller).getAllUsers(), curDate);
+            else
+                sv.setItems(((ClientController)controller).getAllAppointments(), ((ClientController)controller).getAllUsers(), curDate, temp.split(" ")[1]);
+        }
+    }
+    
+    class btnApp_Action implements ActionListener {
+        @Override
+        public void actionPerformed (ActionEvent e) {
+            pnlApp.setVisible(true);
+        }
+    }
+    
+    class btnAdd_Action implements ActionListener {
+        @Override
+        public void actionPerformed (ActionEvent e) {
+            String choice = String.valueOf(repeat.getSelectedItem());
+            String startD = sDay.getText();
+            String endD = null;
+            if (choice.equalsIgnoreCase("None")) 
+                endD = startD;
+            else 
+                endD = eDay.getText();
+            int startT = Integer.parseInt(sTime.getSelectedItem().toString().replace(":", ""));
+            int endT = Integer.parseInt(eTime.getSelectedItem().toString().replace(":", ""));
+            
+            director.setTimeslotBuilder(new AppointmentBuilder(),controller);
+            if (director.addAppSlot(user.getFirstname(), startD, endD, choice, startT, endT)) {
+                pnlApp.setVisible(false); 
+                errorMsg.setVisible(false);
+            }
+            else {
+                errorMsg.setText("ERROR! Conflicting Appointment Slots");
+                errorMsg.setVisible(true);
+            }
+        } 
+    }
+    
+    class repeat_Action implements ActionListener {
+        @Override
+        public void actionPerformed (ActionEvent e) {
+            String choice = String.valueOf(repeat.getSelectedItem());
+            if (choice.equalsIgnoreCase("None")) {
+                eDay.setVisible(false);
+                eDayLbl.setVisible(false);
+            }
+            else {
+                eDay.setVisible(true);
+                eDayLbl.setVisible(true);
+            }
+                
         }
     }
     

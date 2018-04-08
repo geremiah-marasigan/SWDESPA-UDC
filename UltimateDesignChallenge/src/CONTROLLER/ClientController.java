@@ -31,8 +31,24 @@ public class ClientController extends ModuleController {
         String date = monthBound + "/" + dayBound + "/" + yearBound;
         
         view.setController(this);
+        System.out.println(model.getAllAppointments());
+        
         view.setScheduleItems(model.getAllAppointments());
         view.setAgendaItems(model.getAllAppointments(), date);
+    }
+    
+    public void addAppointment(Appointment app) {
+        ((ClientService)model).addAppointment(app);
+        updateViews();
+    }
+    
+    public void deleteAppointment(Appointment app) {
+        ((ClientService)model).deleteAppointment(app);
+        updateViews();
+    }
+    
+    public List<User> getFilterUsers(String name){
+        return ((ClientService)model).getFilterUsers(name);
     }
     
     public List<Appointment> getAllAppointments(){

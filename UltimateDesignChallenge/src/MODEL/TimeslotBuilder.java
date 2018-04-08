@@ -19,6 +19,10 @@ public abstract class TimeslotBuilder {
         controller = mc;
     }
     
+    public ModuleController getController (){
+        return controller;
+    }
+    
     public Appointment getAppointment () {
         return app;
     }

@@ -24,7 +24,13 @@ public class Director {
         Appointment app = builder.getAppointment();
         
         if (builder.isAvailable(app)) {
-            ((AppointmentSlotBuilder)builder).addAppSlot(app);
+            if (builder.getController() instanceof DoctorController){
+                System.out.print("Entered builder");
+                ((AppointmentSlotBuilder)builder).addAppSlot(app);
+            }
+            else if (builder.getController() instanceof ClientController){
+                ((AppointmentBuilder)builder).addAppSlot(app);
+            }
             return true;
         }
         
