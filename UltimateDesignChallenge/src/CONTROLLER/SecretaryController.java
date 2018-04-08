@@ -45,8 +45,8 @@ public class SecretaryController extends ModuleController{
         view.filterViews(model.getAllAppointments(), name);
     }
     
-    public void notifyDoctor(User d){
-        ((SecretaryService)model).addNotification(d);
+    public void notifyDoctor(User d, String msg){
+        ((SecretaryService)model).addNotification(d, msg);
     }
     
     public void notifyAllDoctors(){

@@ -19,10 +19,10 @@ public class SecretaryService extends ModuleService{
         super(connection);
     }
     
-    public void addNotification(User a){
+    public void addNotification(User a, String msg){
         Connection connect = connection.getConnection();
         String query = 	"INSERT INTO " + Notification.TABLE +
-			" VALUES (?, ?)";
+			" VALUES (?, ?, ?)";
         try {
             PreparedStatement statement = connect.prepareStatement(query);
 			
@@ -32,7 +32,8 @@ public class SecretaryService extends ModuleService{
             System.out.println(today.toString());
             String todayString;
             todayString = "" + today.get(Calendar.YEAR) + "/" + today.get(Calendar.MONTH) + "/" + today.get(Calendar.DAY_OF_MONTH) + " " + today.get(Calendar.HOUR_OF_DAY) + ":" + today.get(Calendar.MINUTE);
-            statement.setString(2, todayString);        
+            statement.setString(2, todayString);  
+            statement.setString(3, msg);
             statement.executeUpdate();
             statement.close();
             connect.close();

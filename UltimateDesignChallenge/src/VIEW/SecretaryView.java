@@ -27,6 +27,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.JTextField;
 import javax.swing.ListSelectionModel;
 import static javax.swing.WindowConstants.HIDE_ON_CLOSE;
 import javax.swing.table.DefaultTableModel;
@@ -62,6 +63,8 @@ public class SecretaryView extends JFrame implements ModuleView {
     /**** Notification ****/
     private JButton bttnNotify, bttnNotifyAll;
     private JComboBox cmbNotify;
+    private JLabel lblNotifyMessage;
+    private JTextField txtNotifyTextField;
     
     /**** Timer ****/
     public java.util.Timer timer;
@@ -149,6 +152,15 @@ public class SecretaryView extends JFrame implements ModuleView {
         cmbNotify.setBounds(115,450, 100, 25);
         mainPane.add(cmbNotify);
         
+         
+        lblNotifyMessage = new JLabel("Message: ");
+        lblNotifyMessage.setBounds(10, 475, 100, 25);
+        mainPane.add(lblNotifyMessage);
+        
+        txtNotifyTextField = new JTextField();
+        txtNotifyTextField.setBounds(10, 500, 215, 100);
+        mainPane.add(txtNotifyTextField);
+        
         
         cmbAgenda = new JComboBox(docAgenda);
         cmbAgenda.setBounds(510, 10, 100, 25);
@@ -157,7 +169,8 @@ public class SecretaryView extends JFrame implements ModuleView {
         
         bttnNotify.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){
-                        ((SecretaryController)controller).notifyDoctor(docArray[cmbNotify.getSelectedIndex()]);
+                        ((SecretaryController)controller).notifyDoctor(docArray[cmbNotify.getSelectedIndex()], txtNotifyTextField.getText());
+                        txtNotifyTextField.setText("");
                     }
         });
         
