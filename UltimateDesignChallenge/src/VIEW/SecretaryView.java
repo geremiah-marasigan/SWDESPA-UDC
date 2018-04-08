@@ -69,6 +69,7 @@ public class SecretaryView extends JFrame implements ModuleView {
     
     /**** DocList ****/
     List<User> docList;
+    public JComboBox cmbAgenda;
     
     public SecretaryView() {
         this.setSize(900, 660);
@@ -137,12 +138,27 @@ public class SecretaryView extends JFrame implements ModuleView {
         User[] docArray = new User[docList.size()];
         docList.toArray(docArray);
         String[] docNames = new String[docList.size()];
-        for(int i = 0; i < docList.size(); i++)
+        String[] docAgenda = new String[docList.size() + 1];
+        docAgenda[0] = "All";
+        for(int i = 0; i < docList.size(); i++){
             docNames[i] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
+            docAgenda[i+1] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
+        }
         cmbNotify = new JComboBox(docNames);
         cmbNotify.setBounds(115,450, 100, 25);
         mainPane.add(cmbNotify);
+        
+        
+        cmbAgenda = new JComboBox(docAgenda);
+        cmbAgenda.setBounds(510, 10, 100, 25);
+        mainPane.add(cmbAgenda);
         runTimer();
+        
+        bttnNotify.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        ((SecretaryController)controller).notifyDoctor(docArray[cmbNotify.getSelectedIndex()]);
+                    }
+        });
     }
 
     @Override

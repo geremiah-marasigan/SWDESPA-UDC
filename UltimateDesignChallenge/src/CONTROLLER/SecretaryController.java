@@ -41,6 +41,9 @@ public class SecretaryController extends ModuleController{
         view.updateViews(model.getAllAppointments());
     }
     
+    public void notifyDoctor(User d){
+        ((SecretaryService)model).addNotification(d);
+    }
     
     public void notifyAllDoctors(){
         
