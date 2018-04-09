@@ -174,6 +174,17 @@ public class SecretaryView extends JFrame implements ModuleView {
                     }
         });
         
+        bttnNotifyAll.addActionListener(new ActionListener(){
+                    public void actionPerformed(ActionEvent e){
+                        String text = txtNotifyTextField.getText();
+                        for(int i = 0; i < docArray.length; i++)
+                        {
+                            ((SecretaryController)controller).notifyDoctor(docArray[i], text);
+                            txtNotifyTextField.setText("");
+                        }
+                    }        
+        });
+        
         cmbAgenda.addActionListener(new cmbAgenda_Action());
         
     }
