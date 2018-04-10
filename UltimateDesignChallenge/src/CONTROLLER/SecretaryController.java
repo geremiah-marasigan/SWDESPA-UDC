@@ -5,6 +5,7 @@
  */
 package CONTROLLER;
 
+import MODEL.Appointment;
 import MODEL.ModuleService;
 import MODEL.SecretaryService;
 import MODEL.User;
@@ -43,6 +44,19 @@ public class SecretaryController extends ModuleController{
     
     public void filterViews(String name) {
         view.filterViews(model.getAllAppointments(), name);
+    }
+    
+    public void addAppointment(Appointment app) {
+        ((SecretaryService)model).addAppointment(app);
+        updateViews();
+    }
+    
+    public List<Appointment> getAllAppointments(){
+        return model.getAllAppointments();
+    }
+    
+    public List<User> getAllUsers(){
+        return model.getAllUsers();
     }
     
     public void notifyDoctor(User d, String msg){

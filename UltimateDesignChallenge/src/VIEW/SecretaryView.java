@@ -41,6 +41,7 @@ public class SecretaryView extends JFrame implements ModuleView {
     public ModuleController controller;
     private User user;
     private JLabel icon;
+    private Director director;
     
     /**** Calendar Table Components ***/
     public JTable calendarTable;
@@ -74,6 +75,13 @@ public class SecretaryView extends JFrame implements ModuleView {
     List<User> docList;
     public JComboBox cmbAgenda;
     
+        /****Walk-In Tools****/
+    private JPanel pnlApp;
+    private JButton btnAdd, btnCancel;
+    private JLabel nameLbl, docLbl, sDayLbl, eDayLbl, sTimeLbl, eTimeLbl, repeatLbl, errorMsg;
+    private JTextField name, sDay, eDay;
+    private JComboBox doc, sTime, eTime, repeat;
+    
     public SecretaryView() {
         this.setSize(900, 660);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -87,6 +95,8 @@ public class SecretaryView extends JFrame implements ModuleView {
         
         buildIcon();
         initCalendar();
+        
+        director = new Director();
     }
     
     @Override
@@ -158,7 +168,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         mainPane.add(lblNotifyMessage);
         
         txtNotifyTextField = new JTextField();
-        txtNotifyTextField.setBounds(10, 500, 215, 100);
+        txtNotifyTextField.setBounds(10, 500, 205, 100);
         mainPane.add(txtNotifyTextField);
         
         
@@ -187,6 +197,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         
         cmbAgenda.addActionListener(new cmbAgenda_Action());
         
+        walkInTools();
     }
 
     @Override
@@ -297,6 +308,114 @@ public class SecretaryView extends JFrame implements ModuleView {
         calendarPanel.add(btnNextYear);
         mainPane.add(calendarPanel);
     }
+    
+    public void walkInTools(){
+        pnlApp = new JPanel(null);
+        pnlApp.setBounds(220, 495, 390, 125);
+        pnlApp.setBackground(Color.LIGHT_GRAY);
+        mainPane.add(pnlApp);
+        
+        btnAdd = new JButton("Set Slots");
+        btnAdd.addActionListener(new btnAdd_Action());
+        btnCancel = new JButton("Cancel");
+        btnCancel.addActionListener (new ActionListener () {
+            public void actionPerformed(ActionEvent e) {
+                pnlApp.setVisible(false);
+            }
+        });
+        
+        name = new JTextField(10);
+        sDay = new JTextField(10);
+        eDay = new JTextField(10);
+        eDay.setVisible(false);
+        sTime = new JComboBox();
+        eTime = new JComboBox();
+        for (int hour = 0; hour < 24; hour++) {
+            for (int min = 0; min < 60; min += 30) {
+                String hourString = String.valueOf(hour);
+                if (hourString.length() == 1)
+                    hourString = "0"+hourString;
+                String minString = String.valueOf(min);
+                if (minString.length() == 1)
+                    minString = "0"+minString;
+                String time = hourString + ":" + minString;
+                sTime.addItem(time);
+                eTime.addItem(time);
+            }
+        }
+        
+        User[] docArray = new User[docList.size()];
+        docList.toArray(docArray);
+        String[] docNames = new String[docList.size()];
+        for(int i = 0; i < docList.size(); i++){
+            docNames[i] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
+        }
+        doc = new JComboBox(docNames);
+        
+        String[] repeatOptions = {"None", "Daily", "Monthly"};
+        repeat = new JComboBox(repeatOptions);
+        repeat.setSelectedIndex(0);
+        repeat.addActionListener(new repeat_Action());
+        
+        nameLbl = new JLabel("Name: ");
+        docLbl = new JLabel("Doctor: ");
+        sDayLbl = new JLabel("Start Day: ");
+        eDayLbl = new JLabel("End Day: ");
+        eDayLbl.setVisible(false);
+        sTimeLbl = new JLabel("Start Time: ");
+        eTimeLbl = new JLabel("End Time: ");
+        repeatLbl = new JLabel("Repeat: ");
+        errorMsg = new JLabel("ERROR");
+        errorMsg.setForeground(Color.red);
+        errorMsg.setVisible(false);
+        
+        GregorianCalendar cal = new GregorianCalendar();
+        int dayBound = cal.get(GregorianCalendar.DAY_OF_MONTH);
+        int monthBound = cal.get(GregorianCalendar.MONTH) + 1;
+        int yearBound = cal.get(GregorianCalendar.YEAR);
+        curDate = monthBound + "/" + dayBound + "/" + yearBound;
+        sDay.setText(curDate);
+        eDay.setText(curDate);
+        
+        nameLbl.setBounds(5, 3, 100, 25);
+        docLbl.setBounds(5, 27, 100, 25);
+        sDayLbl.setBounds(5, 52, 100, 25);
+        sTimeLbl.setBounds(5, 75, 100, 25);
+        eTimeLbl.setBounds(140, 75, 100, 25);
+        repeatLbl.setBounds(210, 5, 70, 25);
+        eDayLbl.setBounds(210, 30, 70, 25);
+        errorMsg.setBounds(105, 100, 70, 25);
+        
+        name.setBounds(72, 3, 100, 25);
+        doc.setBounds(72, 27, 100, 25);
+        sDay.setBounds(72, 52, 100, 25);
+        sTime.setBounds(72, 75, 65, 25);
+        eTime.setBounds(200, 75, 65, 25);
+        repeat.setBounds(280, 5, 100, 25);
+        eDay.setBounds(280, 30, 100, 25);
+        btnAdd.setBounds(280, 60, 100,30);
+        btnCancel.setBounds(280, 90, 100,30);
+        
+        pnlApp.add(name);
+        pnlApp.add(doc);
+        pnlApp.add(btnAdd);
+        pnlApp.add(btnCancel);
+        pnlApp.add(sDay);
+        pnlApp.add(eDay);
+        pnlApp.add(sTime);
+        pnlApp.add(eTime);
+        pnlApp.add(repeat);
+        
+        pnlApp.add(nameLbl);
+        pnlApp.add(docLbl);
+        pnlApp.add(sDayLbl);
+        pnlApp.add(eDayLbl);
+        pnlApp.add(sTimeLbl);
+        pnlApp.add(eTimeLbl);
+        pnlApp.add(repeatLbl);
+        pnlApp.add(errorMsg);
+        
+    }
 
     @Override
     public void refreshCalendar(int month, int year) {
@@ -389,4 +508,46 @@ public class SecretaryView extends JFrame implements ModuleView {
             refreshCalendar(monthToday, yearToday);
         }
     }
+    
+    class btnAdd_Action implements ActionListener {
+        @Override
+        public void actionPerformed (ActionEvent e) {
+            String choice = String.valueOf(repeat.getSelectedItem());
+            String startD = sDay.getText();
+            String endD = null;
+            if (choice.equalsIgnoreCase("None")) 
+                endD = startD;
+            else 
+                endD = eDay.getText();
+            int startT = Integer.parseInt(sTime.getSelectedItem().toString().replace(":", ""));
+            int endT = Integer.parseInt(eTime.getSelectedItem().toString().replace(":", ""));
+            
+            director.setTimeslotBuilder(new AppointmentBuilder(), controller);
+            if (director.addAppSlot(name.getText(), startD, endD, choice, startT, endT)) {
+                pnlApp.setVisible(false); 
+                errorMsg.setVisible(false);
+            }
+            else {
+                errorMsg.setText("ERROR! Conflicting Appointment Slots");
+                errorMsg.setVisible(true);
+            }
+        } 
+    }
+    
+    class repeat_Action implements ActionListener {
+        @Override
+        public void actionPerformed (ActionEvent e) {
+            String choice = String.valueOf(repeat.getSelectedItem());
+            if (choice.equalsIgnoreCase("None")) {
+                eDay.setVisible(false);
+                eDayLbl.setVisible(false);
+            }
+            else {
+                eDay.setVisible(true);
+                eDayLbl.setVisible(true);
+            }
+                
+        }
+    }
+    
 }

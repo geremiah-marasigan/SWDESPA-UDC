@@ -294,7 +294,7 @@ public class ClientView extends JFrame implements ModuleView {
         sTimeLbl = new JLabel("Start Time: ");
         eTimeLbl = new JLabel("End Time: ");
         repeatLbl = new JLabel("Repeat: ");
-        errorMsg = new JLabel();
+        errorMsg = new JLabel("ERROR");
         errorMsg.setForeground(Color.red);
         errorMsg.setVisible(false);
         

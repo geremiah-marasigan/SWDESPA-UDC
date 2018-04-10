@@ -31,6 +31,10 @@ public class Director {
             else if (builder.getController() instanceof ClientController){
                 ((AppointmentBuilder)builder).addAppSlot(app);
             }
+            else if (builder.getController() instanceof SecretaryController){
+                ((AppointmentBuilder)builder).addAppSlot(app);
+            }
+            
             return true;
         }
         

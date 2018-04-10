@@ -43,4 +43,28 @@ public class SecretaryService extends ModuleService{
             System.out.println("[Notification] INSERT FAILED!");
         }
     }
+    
+        public void addAppointment(Appointment a) {
+        Connection connect = connection.getConnection();
+        String query = 	"INSERT INTO " + Appointment.TABLE +
+			" VALUES (?, ?, ?, ?, ?, ?)";
+        try {
+            PreparedStatement statement = connect.prepareStatement(query);
+			
+            statement.setString(1, a.getName());
+            statement.setString(2, a.getStartDay());
+            statement.setString(3, a.getEndDay());
+            statement.setString(4, a.getRepeat());
+            statement.setInt(5, a.getStartTime());
+            statement.setInt(6, a.getEndTime());
+			
+            statement.executeUpdate();
+            statement.close();
+            connect.close();
+            System.out.println("[Appointment] INSERT SUCCESS!");
+        } catch (SQLException ev) {
+            ev.printStackTrace();
+            System.out.println("[Appointment] INSERT FAILED!");
+        }	
+    }
 }
