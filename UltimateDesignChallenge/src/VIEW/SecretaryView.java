@@ -77,7 +77,7 @@ public class SecretaryView extends JFrame implements ModuleView {
     
         /****Walk-In Tools****/
     private JPanel pnlApp;
-    private JButton btnAdd, btnCancel;
+    private JButton btnWalkIn, btnAdd, btnCancel;
     private JLabel nameLbl, docLbl, sDayLbl, eDayLbl, sTimeLbl, eTimeLbl, repeatLbl, errorMsg;
     private JTextField name, sDay, eDay;
     private JComboBox doc, sTime, eTime, repeat;
@@ -197,6 +197,11 @@ public class SecretaryView extends JFrame implements ModuleView {
         
         cmbAgenda.addActionListener(new cmbAgenda_Action());
         
+        btnWalkIn = new JButton("Add Walk-in Appointment");
+        btnWalkIn.setBounds(310, 495, 200, 25);
+        mainPane.add(btnWalkIn);
+        btnWalkIn.addActionListener(new btnWalkIn_Action());
+
         walkInTools();
     }
 
@@ -314,6 +319,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         pnlApp.setBounds(220, 495, 390, 125);
         pnlApp.setBackground(Color.LIGHT_GRAY);
         mainPane.add(pnlApp);
+        pnlApp.setVisible(false);
         
         btnAdd = new JButton("Set Slots");
         btnAdd.addActionListener(new btnAdd_Action());
@@ -321,6 +327,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         btnCancel.addActionListener (new ActionListener () {
             public void actionPerformed(ActionEvent e) {
                 pnlApp.setVisible(false);
+                btnWalkIn.setVisible(true);
             }
         });
         
@@ -467,6 +474,14 @@ public class SecretaryView extends JFrame implements ModuleView {
             String selectedDoc = "";
             selectedDoc = cmbAgenda.getSelectedItem().toString();
             ((SecretaryController)controller).filterViews(selectedDoc);
+        }
+    }
+    
+    class btnWalkIn_Action implements ActionListener {
+        @Override
+        public void actionPerformed (ActionEvent e) {
+            btnWalkIn.setVisible(false);
+            pnlApp.setVisible(true);
         }
     }
     
