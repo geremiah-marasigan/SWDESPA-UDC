@@ -109,7 +109,12 @@ public class AgendaItem extends JPanel {
             }
             trashBtn.setVisible(true);
             timeLbl.setText(app.getStartTime() + " - " + app.getEndTime());
-            nameLbl.setText("Dr. " + app.getName());
+            if (((SecretaryController) controller).getAppointmentType(app).equals("DOCTOR")) {
+                nameLbl.setText("Dr. " + app.getName());
+            } else {
+                nameLbl.setText(app.getName());
+                this.setBackground(Color.CYAN);
+            }
         }
     }
 

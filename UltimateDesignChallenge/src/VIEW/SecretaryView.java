@@ -154,7 +154,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         String[] docAgenda = new String[docList.size() + 1]; //names + "All"
         docAgenda[0] = "All";
         for(int i = 0; i < docList.size(); i++){
-            docNames[i] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
+            docNames[i] = "Dr. " + docArray[i].getFirstname() + " " + docArray[i].getLastname();
             //docAgenda[i+1] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
             docAgenda[i+1] = docArray[i].getFirstname();
         }

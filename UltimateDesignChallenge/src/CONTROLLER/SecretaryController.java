@@ -63,8 +63,8 @@ public class SecretaryController extends ModuleController{
         ((SecretaryService)model).addNotification(d, msg);
     }
     
-    public void notifyAllDoctors(){
-        
+    public String getAppointmentType(Appointment a){
+        return ((SecretaryService)model).getTypeOfUserGivenAppointment(a.getName());
         
     }
 }

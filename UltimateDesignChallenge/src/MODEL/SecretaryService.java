@@ -7,6 +7,7 @@ package MODEL;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Calendar;
 
@@ -44,7 +45,7 @@ public class SecretaryService extends ModuleService{
         }
     }
     
-        public void addAppointment(Appointment a) {
+    public void addAppointment(Appointment a) {
         Connection connect = connection.getConnection();
         String query = 	"INSERT INTO " + Appointment.TABLE +
 			" VALUES (?, ?, ?, ?, ?, ?)";
@@ -66,5 +67,42 @@ public class SecretaryService extends ModuleService{
             ev.printStackTrace();
             System.out.println("[Appointment] INSERT FAILED!");
         }	
+    }
+    
+    private User toUser(ResultSet rs) throws SQLException {
+	User user = new User(rs.getString(User.COL_EMAIL),
+                             rs.getString(User.COL_PASSWORD),
+                             rs.getString(User.COL_TYPE),
+                             rs.getString(User.COL_FIRSTNAME),
+                             rs.getString(User.COL_LASTNAME));
+        
+	return user;
+    }
+    
+    public String getTypeOfUserGivenAppointment(String name){
+        User user;
+	Connection connect = connection.getConnection();
+	String query = 	"SELECT * " + " FROM " + User.TABLE + " WHERE " + User.COL_FIRSTNAME + " = ?";
+
+        try {
+            PreparedStatement statement = connect.prepareStatement(query);
+            statement.setString(1,name);
+            
+            ResultSet rs = statement.executeQuery();
+            rs.next();
+            user = toUser(rs);
+			
+            rs.close();
+            statement.close();
+            connect.close();
+	
+            System.out.println("[Type] SELECT SUCCESS!");
+	} catch (SQLException e) {
+            e.printStackTrace();
+            System.out.println("[Type] SELECT FAILED!");
+            return null;
+	}	
+		
+        return user.getType();
     }
 }
