@@ -69,6 +69,31 @@ public class SecretaryService extends ModuleService{
         }	
     }
     
+    public void deleteAppointment(Appointment app) {
+	Connection connect = connection.getConnection();
+	String query = 	"DELETE FROM " + 
+			Appointment.TABLE +
+			" WHERE " + Appointment.COL_NAME + " = ? AND " +
+                                    Appointment.COL_STIME + " = ? AND " +
+                                    Appointment.COL_ETIME + " = ? ";
+		
+	try {
+            PreparedStatement statement = connect.prepareStatement(query);
+			
+            statement.setString(1, app.getName());
+            statement.setInt(2, app.getStartTime());
+            statement.setInt(3, app.getEndTime());
+            statement.executeUpdate();
+			
+            statement.close();
+            connect.close();
+            System.out.println("[Appointment] DELETE SUCCESS!");
+        } catch (SQLException ev) {
+            System.out.println("[Appointment] DELETE FAILED!");
+            ev.printStackTrace();
+	}	
+    }
+    
     private User toUser(ResultSet rs) throws SQLException {
 	User user = new User(rs.getString(User.COL_EMAIL),
                              rs.getString(User.COL_PASSWORD),
@@ -100,7 +125,7 @@ public class SecretaryService extends ModuleService{
 	} catch (SQLException e) {
             e.printStackTrace();
             System.out.println("[Type] SELECT FAILED!");
-            return null;
+            return "";
 	}	
 		
         return user.getType();

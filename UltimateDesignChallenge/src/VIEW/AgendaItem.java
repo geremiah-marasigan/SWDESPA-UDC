@@ -141,6 +141,9 @@ public class AgendaItem extends JPanel {
             } else if (controller instanceof ClientController) {
                 ((ClientController) controller).deleteAppointment(app);
             }
+                else if (controller instanceof SecretaryController) {
+                ((SecretaryController) controller).deleteAppointment(app);
+                }
         }
     }
 }

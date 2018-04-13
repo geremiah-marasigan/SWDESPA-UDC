@@ -51,6 +51,11 @@ public class SecretaryController extends ModuleController{
         updateViews();
     }
     
+    public void deleteAppointment(Appointment app) {
+        ((SecretaryService)model).deleteAppointment(app);
+        updateViews();
+    }
+    
     public List<Appointment> getAllAppointments(){
         return model.getAllAppointments();
     }
