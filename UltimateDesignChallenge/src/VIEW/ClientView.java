@@ -128,7 +128,7 @@ public class ClientView extends JFrame implements ModuleView {
         
         for (User user: ((ClientController)controller).getAllUsers()){
             if (user.getType().equals("DOCTOR"))
-                doctors.addItem("Dr. " + user.getLastname());
+                doctors.addItem("Dr. " + user.getFirstname());
         }
     }
 
@@ -140,7 +140,7 @@ public class ClientView extends JFrame implements ModuleView {
 
     @Override
     public void setScheduleItems(List<Appointment> apps) {
-        sv.setItems(apps, ((ClientController)controller).getAllUsers(),((ClientController)controller).getAllDeleted(), curDate);
+        sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate);
     }
 
     @Override
@@ -153,9 +153,14 @@ public class ClientView extends JFrame implements ModuleView {
         av.setItems(apps, curDate);
         String temp = (String) doctors.getSelectedItem();
             if(temp.equals("All Doctors"))
-                sv.setItems(apps, ((ClientController)controller).getAllUsers(),((ClientController)controller).getAllDeleted(), curDate);
+                sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate);
             else
-                sv.setItems(apps, ((ClientController)controller).getAllUsers(),((ClientController)controller).getAllDeleted(), curDate, temp.split(" ")[1]);
+                sv.setItems(apps, ((ClientController)controller).getAllUsers(), curDate, temp.split(" ")[1]);
+    }
+    
+    @Override
+    public void filterViews(List<Appointment> apps, String name) {
+        
     }
 
     @Override
@@ -289,7 +294,7 @@ public class ClientView extends JFrame implements ModuleView {
         sTimeLbl = new JLabel("Start Time: ");
         eTimeLbl = new JLabel("End Time: ");
         repeatLbl = new JLabel("Repeat: ");
-        errorMsg = new JLabel();
+        errorMsg = new JLabel("ERROR");
         errorMsg.setForeground(Color.red);
         errorMsg.setVisible(false);
         
@@ -306,7 +311,7 @@ public class ClientView extends JFrame implements ModuleView {
         eTimeLbl.setBounds(5, 55, 100, 25);
         repeatLbl.setBounds(210, 5, 70, 25);
         eDayLbl.setBounds(210, 30, 70, 25);
-        errorMsg.setBounds(5, 90, 200, 25);
+        errorMsg.setBounds(105, 90, 70, 25);
         
         sDay.setBounds(105, 5, 100, 25);
         sTime.setBounds(105, 30, 100, 25);
@@ -364,10 +369,6 @@ public class ClientView extends JFrame implements ModuleView {
         calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0), new TableRenderer());
     }
     
-    public String getCurDate(){
-        return this.curDate;
-    }
-    
     class calListener extends MouseAdapter {
         @Override
         public void mouseClicked(MouseEvent evt) {
@@ -387,9 +388,9 @@ public class ClientView extends JFrame implements ModuleView {
         public void actionPerformed (ActionEvent e) {
             String temp = (String) doctors.getSelectedItem();
             if(temp.equals("All Doctors"))
-                sv.setItems(((ClientController)controller).getAllAppointments(), ((ClientController)controller).getAllUsers(),((ClientController)controller).getAllDeleted(), curDate);
+                sv.setItems(((ClientController)controller).getAllAppointments(), ((ClientController)controller).getAllUsers(), curDate);
             else
-                sv.setItems(((ClientController)controller).getAllAppointments(), ((ClientController)controller).getAllUsers(),((ClientController)controller).getAllDeleted(), curDate, temp.split(" ")[1]);
+                sv.setItems(((ClientController)controller).getAllAppointments(), ((ClientController)controller).getAllUsers(), curDate, temp.split(" ")[1]);
         }
     }
     
@@ -414,13 +415,12 @@ public class ClientView extends JFrame implements ModuleView {
             int endT = Integer.parseInt(eTime.getSelectedItem().toString().replace(":", ""));
             
             director.setTimeslotBuilder(new AppointmentBuilder(),controller);
-            if (director.addApp(user.getLastname(), startD, endD, choice, startT, endT)) {
+            if (director.addAppSlot(user.getFirstname(), startD, endD, choice, startT, endT)) {
                 pnlApp.setVisible(false); 
                 errorMsg.setVisible(false);
             }
             else {
-                System.out.println("Pokemon");
-                errorMsg.setText("ERROR! Conflicting Appointment");
+                errorMsg.setText("ERROR! Conflicting Appointment Slots");
                 errorMsg.setVisible(true);
             }
         } 

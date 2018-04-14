@@ -10,26 +10,16 @@ package MODEL;
  * @author zachmarasigan
  */
 public class Notification {
-    private String name, date, message;
-
-    public String getMessage() {
-        return message;
-    }
-
-    public void setMessage(String message) {
-        this.message = message;
-    }
+    private String name, date;
     
     // FOR THE DATABASE
     public static final String TABLE = "Notification";
     public static final String COL_NAME = "Name";
     public static final String COL_DSENT = "DateSent";
-    public static final String COL_MSG = "Message";
     
-    public Notification(String name, String date, String message) {
+    public Notification(String name, String date) {
         this.name = name;
         this.date = date;
-        this.message = message;
     }
 
     public String getName() {

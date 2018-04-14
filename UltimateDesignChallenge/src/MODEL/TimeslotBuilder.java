@@ -19,7 +19,7 @@ public abstract class TimeslotBuilder {
         controller = mc;
     }
     
-    public ModuleController getController () {
+    public ModuleController getController (){
         return controller;
     }
     

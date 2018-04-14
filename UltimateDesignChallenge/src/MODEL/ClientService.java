@@ -45,66 +45,6 @@ public class ClientService extends ModuleService {
         }	
     }	
     
-    public void addDelete(Appointment a, String date) {
-        Connection connect = connection.getConnection();
-        String query = 	"INSERT INTO deletedslots" +
-			" VALUES (?, ?, ?, ?, ?)";
-        try {
-            PreparedStatement statement = connect.prepareStatement(query);
-			
-            statement.setString(1, a.getName());
-            statement.setString(2, date);
-            statement.setString(3, date);
-            statement.setInt(4, a.getStartTime());
-            statement.setInt(5, a.getEndTime());
-			
-            statement.executeUpdate();
-            statement.close();
-            connect.close();
-            System.out.println("[Appointment] INSERT SUCCESS!");
-        } catch (SQLException ev) {
-            ev.printStackTrace();
-            System.out.println("[Appointment] INSERT FAILED!");
-        }	
-    }
-    
-    public Appointment toDelete(ResultSet rs) throws SQLException {
-	Appointment app = new Appointment(rs.getString(Appointment.COL_NAME),
-                                          rs.getString(Appointment.COL_SDAY),
-                                          rs.getString(Appointment.COL_EDAY),
-                                          "None",
-                                          rs.getInt(Appointment.COL_STIME),
-                                          rs.getInt(Appointment.COL_ETIME));
-	return app;
-    }
-    
-    public List<Appointment> getAllDeleted() {
-        List <Appointment> apps = new ArrayList <> ();
-	Connection connect = connection.getConnection();
-	String query = 	"SELECT * " + " FROM deletedslots" + " ORDER BY " + Appointment.COL_STIME;
-
-        try {
-            PreparedStatement statement = connect.prepareStatement(query);
-            ResultSet rs = statement.executeQuery();
-			
-            while(rs.next()) {
-		apps.add(toDelete(rs));
-            }
-			
-            rs.close();
-            statement.close();
-            connect.close();
-	
-            System.out.println("[Appointment] SELECT SUCCESS!");
-	} catch (SQLException e) {
-            e.printStackTrace();
-            System.out.println("[Appointment] SELECT FAILED!");
-            return null;
-	}	
-		
-        return apps;	
-    }
-    
     public void deleteAppointment(Appointment app) {
 	Connection connect = connection.getConnection();
 	String query = 	"DELETE FROM " + 

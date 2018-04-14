@@ -18,9 +18,6 @@ import java.awt.Image;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.BorderFactory;
@@ -69,7 +66,6 @@ public class AgendaItem extends JPanel {
         setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
     }
 
-    // SECRETARY
     public AgendaItem(ModuleController c, Appointment app) {
         this();
         this.controller = c;
@@ -87,6 +83,23 @@ public class AgendaItem extends JPanel {
                 appLbl.setText(app.getStartDay() + " - " + app.getEndDay());
             }
             timeLbl.setText(app.getStartTime() + " - " + app.getEndTime());
+            List<Appointment> apps = ((ClientController) controller).getAllAppointments();
+            List<User> users = ((ClientController) controller).getAllUsers();
+            if (app.getStartTime() >= app.getEndTime()) {
+                
+            }
+            
+                for (Appointment App : apps) {
+                    for (User user : users) {
+                        if (App.getName().equals(user.getFirstname()) && user.getType().equals("DOCTOR")) {
+                            if (app.getStartTime() >= App.getStartTime() && app.getEndTime() <= App.getEndTime()) {
+                                nameLbl.setText("Dr. " + App.getName());
+                            }
+                        }
+
+                    }
+                }
+            trashBtn.setVisible(true);
         } else if (controller instanceof SecretaryController) {
             if (app.getStartDay().equals(app.getEndDay())) {
                 System.out.println(app.getStartDay());
@@ -104,63 +117,12 @@ public class AgendaItem extends JPanel {
             }
         }
     }
-    // SECRETARY ENDS HERE
-
-    // DOCTOR
-    public AgendaItem(ModuleController c, Appointment app, int time, boolean booked) {
-        this();
-        this.controller = c;
-        this.app = app;
-        if (booked) {
-            this.setBackground(new Color(186, 255, 133).darker());
-            appLbl.setText("APPOINTMENT W/");
-            timeLbl.setText("" + time);
-        } else {
-            this.setBackground(new Color(186, 255, 133));
-            appLbl.setText("FREE APPOINTMENT SLOT");
-            timeLbl.setText("" + time);
-        }
-
-        trashBtn.setVisible(true);
-    }
 
     public static final AgendaItem createEmptyDoctor() {
         AgendaItem item = new AgendaItem();
         item.appLbl.setText("NOTHING FOR TODAY");
         item.setBackground(new Color(186, 184, 183));
         return item;
-    }
-    // DOCTOR ENDS HERE
-
-    // CLIENT
-    public AgendaItem(ModuleController c, Appointment app, String date) {
-        this();
-        this.controller = c;
-        this.app = app;
-        this.setBackground(new Color(186, 255, 133));
-        if (app.getStartDay().equals(app.getEndDay())) {
-            appLbl.setText(app.getStartDay());
-        } else {
-            appLbl.setText(app.getStartDay() + " - " + app.getEndDay());
-        }
-        trashBtn.setVisible(true);
-        timeLbl.setText(app.getStartTime() + " - " + app.getEndTime());
-        appLbl.setPreferredSize(new Dimension(130, 40));
-        List<Appointment> apps = ((ClientController) controller).getAllAppointments();
-        List<User> users = ((ClientController) controller).getAllUsers();
-        outerloop:
-        for (Appointment App : apps) {
-            for (User user : users) {
-                if (App.getName().equals(user.getLastname()) && user.getType().equals("DOCTOR")) {
-                    if (app.getStartTime() >= App.getStartTime() && app.getEndTime() <= App.getEndTime() && checkDate(App.getStartDay(), App.getEndDay(), date, App.getRepeat())) {
-                        nameLbl.setText("Dr. " + user.getLastname());
-                        break;
-                    }
-                }
-
-            }
-        }
-
     }
 
     public static final AgendaItem createEmptyClient() {
@@ -169,65 +131,19 @@ public class AgendaItem extends JPanel {
         item.setBackground(new Color(186, 184, 183));
         return item;
     }
-    // CLIENT ENDS HERE
-    
-    
-    // EVERYONE
+
     class trashBtn_Action implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent e) {
             if (controller instanceof DoctorController) {
                 ((DoctorController) controller).deleteAppointment(app);
-                List<Appointment> apps = ((DoctorController) controller).getDeletedSlots();
-                for (Appointment a : apps) {
-                    if (app.getStartTime() <= a.getStartTime() && app.getEndTime() >= app.getEndTime()
-                            && (daysBetween(app.getStartDay(), a.getStartDay()) >= 0 && daysBetween(a.getStartDay(), a.getEndDay()) >= 0)) {
-                        ((DoctorController) controller).deleteAppointment2(a);
-                    }
-                }
             } else if (controller instanceof ClientController) {
-                if (app.getRepeat() == "None") {
-                    ((ClientController) controller).deleteAppointment(app);
-                } else {
-                    ((ClientController) controller).deleteRepeat(app, ((ClientController) controller).getCurDate());
-                }
-            } else if (controller instanceof SecretaryController) {
-                ((SecretaryController) controller).deleteAppointment(app);
+                ((ClientController) controller).deleteAppointment(app);
             }
-        }
-
-        public long daysBetween(String date1, String date2) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-            LocalDate firstDate = LocalDate.parse(date1, formatter);
-            LocalDate secondDate = LocalDate.parse(date2, formatter);
-            long days = ChronoUnit.DAYS.between(firstDate, secondDate);
-            return days;
-        }
-    }
-
-    public boolean checkDate(String startDay, String endDay, String curDay, String repeat) {
-        switch (repeat) {
-            case "None":
-                if (startDay.equalsIgnoreCase(curDay)) {
-                    return true;
-                }
-            case "Daily":
-                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0) {
-                    return true;
-                }
-            case "Monthly":
-                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0 && daysBetween(startDay, curDay) % 31 == 0) {
-                    return true;
+                else if (controller instanceof SecretaryController) {
+                ((SecretaryController) controller).deleteAppointment(app);
                 }
         }
-        return false;
-    }
-
-    public long daysBetween(String date1, String date2) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-        LocalDate firstDate = LocalDate.parse(date1, formatter);
-        LocalDate secondDate = LocalDate.parse(date2, formatter);
-        long days = ChronoUnit.DAYS.between(firstDate, secondDate);
-        return days;
     }
 }

@@ -15,7 +15,6 @@ public class Appointment {
     
     // FOR THE DATABASE
     public static final String TABLE = "Appointment";
-    public static final String TABLE2 = "DeletedSlots";
     public static final String COL_NAME = "Name";
     public static final String COL_SDAY = "StartDay";
     public static final String COL_EDAY = "EndDay";

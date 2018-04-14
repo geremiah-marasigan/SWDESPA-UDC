@@ -9,7 +9,6 @@ import MODEL.Appointment;
 import MODEL.ClientService;
 import MODEL.ModuleService;
 import MODEL.User;
-import VIEW.ClientView;
 import VIEW.ModuleView;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -43,17 +42,8 @@ public class ClientController extends ModuleController {
         updateViews();
     }
     
-    public String getCurDate(){
-        return ((ClientView)view).getCurDate();
-    }
-    
     public void deleteAppointment(Appointment app) {
         ((ClientService)model).deleteAppointment(app);
-        updateViews();
-    }
-    
-    public void deleteRepeat(Appointment app, String date) {
-        ((ClientService)model).addDelete(app, date);
         updateViews();
     }
     
@@ -64,9 +54,7 @@ public class ClientController extends ModuleController {
     public List<Appointment> getAllAppointments(){
         return model.getAllAppointments();
     }
-    public List<Appointment> getAllDeleted(){
-        return ((ClientService)model).getAllDeleted();
-    }
+    
     public List<User> getAllUsers(){
         return model.getAllUsers();
     }
