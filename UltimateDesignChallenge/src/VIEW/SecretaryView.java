@@ -227,7 +227,6 @@ public class SecretaryView extends JFrame implements ModuleView {
         av.setItems(apps, curDate);
     }
     
-    @Override
     public void filterViews(List<Appointment> apps, String name) {
         sv.filterItems(apps, docList, curDate, name);
         av.filterItems(apps, curDate, name);
@@ -241,7 +240,7 @@ public class SecretaryView extends JFrame implements ModuleView {
             }
         };
         timer = new java.util.Timer(true);
-        timer.scheduleAtFixedRate(timerTask, 1000, 1000);
+        timer.scheduleAtFixedRate(timerTask, 5000, 5000);
     }
     @Override
     public void initCalendar() {

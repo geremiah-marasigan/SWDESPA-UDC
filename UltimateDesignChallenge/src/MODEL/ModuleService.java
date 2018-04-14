@@ -51,10 +51,10 @@ public abstract class ModuleService {
             statement.close();
             connect.close();
 	
-            System.out.println("[Client] SELECT SUCCESS!");
+        //    System.out.println("[Client] SELECT SUCCESS!");
 	} catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("[Client] SELECT FAILED!");
+        //    System.out.println("[Client] SELECT FAILED!");
             return null;
 	}	
 		
@@ -74,7 +74,7 @@ public abstract class ModuleService {
     public List<Appointment> getAllAppointments() {
 	List <Appointment> apps = new ArrayList <> ();
 	Connection connect = connection.getConnection();
-	String query = 	"SELECT * " + " FROM " + Appointment.TABLE;
+	String query = 	"SELECT * " + " FROM " + Appointment.TABLE  +" ORDER BY " + Appointment.COL_SDAY +", "+Appointment.COL_STIME;
 
         try {
             PreparedStatement statement = connect.prepareStatement(query);
@@ -88,10 +88,10 @@ public abstract class ModuleService {
             statement.close();
             connect.close();
 	
-            System.out.println("[Appointment] SELECT SUCCESS!");
+        //    System.out.println("[Appointment] SELECT SUCCESS!");
 	} catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("[Appointment] SELECT FAILED!");
+        //    System.out.println("[Appointment] SELECT FAILED!");
             return null;
 	}	
 		

@@ -27,8 +27,6 @@ public interface ModuleView {
     
     public void updateViews (List<Appointment> apps);
     
-    public void filterViews (List<Appointment> apps, String name);
-    
     public void initCalendar();
     
     public void refreshCalendar(int month, int year);

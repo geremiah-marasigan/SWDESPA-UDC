@@ -10,6 +10,7 @@ import MODEL.ModuleService;
 import MODEL.SecretaryService;
 import MODEL.User;
 import VIEW.ModuleView;
+import VIEW.SecretaryView;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -43,7 +44,7 @@ public class SecretaryController extends ModuleController{
     }
     
     public void filterViews(String name) {
-        view.filterViews(model.getAllAppointments(), name);
+        ((SecretaryView)view).filterViews(model.getAllAppointments(), name);
     }
     
     public void addAppointment(Appointment app) {
