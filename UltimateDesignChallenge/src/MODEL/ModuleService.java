@@ -51,10 +51,10 @@ public abstract class ModuleService {
             statement.close();
             connect.close();
 	
-            System.out.println("[Client] SELECT SUCCESS!");
+        //    System.out.println("[Client] SELECT SUCCESS!");
 	} catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("[Client] SELECT FAILED!");
+        //    System.out.println("[Client] SELECT FAILED!");
             return null;
 	}	
 		
@@ -63,18 +63,16 @@ public abstract class ModuleService {
     
     public Appointment toAppointment(ResultSet rs) throws SQLException {
 	Appointment app = new Appointment(rs.getString(Appointment.COL_NAME),
-                                          rs.getString(Appointment.COL_SDAY),
-                                          rs.getString(Appointment.COL_EDAY),
-                                          rs.getString(Appointment.COL_REPEAT),
-                                          rs.getInt(Appointment.COL_STIME),
-                                          rs.getInt(Appointment.COL_ETIME));
+                                          rs.getString(Appointment.COL_DATE),
+                                          rs.getInt(Appointment.COL_TIME),
+                                          rs.getString(Appointment.COL_TAKEN));
 	return app;
     }
     
     public List<Appointment> getAllAppointments() {
 	List <Appointment> apps = new ArrayList <> ();
 	Connection connect = connection.getConnection();
-	String query = 	"SELECT * " + " FROM " + Appointment.TABLE;
+	String query = 	"SELECT * " + " FROM " + Appointment.TABLE  +" ORDER BY " + Appointment.COL_DATE +", "+Appointment.COL_TIME;
 
         try {
             PreparedStatement statement = connect.prepareStatement(query);
@@ -88,10 +86,38 @@ public abstract class ModuleService {
             statement.close();
             connect.close();
 	
-            System.out.println("[Appointment] SELECT SUCCESS!");
+        //    System.out.println("[Appointment] SELECT SUCCESS!");
 	} catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("[Appointment] SELECT FAILED!");
+        //    System.out.println("[Appointment] SELECT FAILED!");
+            return null;
+	}	
+		
+        return apps;
+    }
+    
+    public List<Appointment> getSlots(String date) {
+	List <Appointment> apps = new ArrayList <> ();
+	Connection connect = connection.getConnection();
+	String query = 	"SELECT * " + " FROM " + Appointment.TABLE  + " WHERE " + Appointment.COL_DATE + " = ?";
+
+        try {
+            PreparedStatement statement = connect.prepareStatement(query);
+            statement.setString(1, date);
+            ResultSet rs = statement.executeQuery();
+			
+            while(rs.next()) {
+		apps.add(toAppointment(rs));
+            }
+			
+            rs.close();
+            statement.close();
+            connect.close();
+	
+        //    System.out.println("[Appointment] SELECT SUCCESS!");
+	} catch (SQLException e) {
+            e.printStackTrace();
+        //    System.out.println("[Appointment] SELECT FAILED!");
             return null;
 	}	
 		

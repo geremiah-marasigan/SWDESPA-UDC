@@ -5,11 +5,11 @@
  */
 package CONTROLLER;
 
-import MODEL.Appointment;
-import MODEL.DoctorService;
-import MODEL.ModuleService;
-import VIEW.ModuleView;
+import MODEL.*;
+import VIEW.*;
+import java.sql.Connection;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 /**
  *
@@ -29,21 +29,69 @@ public class DoctorController extends ModuleController {
         int yearBound = cal.get(GregorianCalendar.YEAR);
         String date = monthBound + "/" + dayBound + "/" + yearBound;
         
-        view.setScheduleItems(model.getAllAppointments());
-        view.setAgendaItems(model.getAllAppointments(), date);
+        updateViews(date);
     }
     
     public void addAppointment(Appointment app) {
         ((DoctorService)model).addAppointment(app);
-        updateViews();
+        updateViews(app.getDate());
     }
     
     public void deleteAppointment(Appointment app) {
         ((DoctorService)model).deleteAppointment(app);
-        updateViews();
+        updateViews(app.getDate());
     }
     
-    public void updateViews () {
-        view.updateViews(model.getAllAppointments());
+    public void deleteDay(Appointment app) {
+        ((DoctorService)model).deleteDay(app);
+        updateViews(app.getDate());
     }
+    
+    public void updateViews (String date) {
+        view.updateViews(model.getSlots(date));
+    }
+    
+    public void updateViews (User user, String date) {
+        view.updateViews(model.getSlots(date));
+        ((DoctorView)view).setNotifItems(((DoctorController)this).getNotifications(user, date));
+    }
+    
+    public List<Appointment> getAllSlots() {
+        return model.getAllAppointments();
+    }
+    
+    public List<Appointment> getSlots(String date) {
+        return model.getSlots(date);
+    }
+    
+    /*
+    
+    public List<Appointment> getDeletedSlots() {
+        return ((DoctorService)model).getDeletedSlots();
+    }
+    
+    public List<String> getDoctors() {
+        return ((DoctorService)model).getDoctors();
+    }
+    */
+    
+    public List<Notification> getNotifications(User user, String curDate) {
+        return ((DoctorService)model).getNotifications(user, curDate);
+    }
+    
+    /*
+    public List<Appointment> getAppointments() {
+        return ((DoctorService)model).getAppointments(getDoctors());
+    }
+    */
+    
+    public void edit(String time) {
+        ((DoctorView)view).edit(time);
+    }
+    
+    public void deleteNotif (Notification n) {
+        ((DoctorService)model).deleteNotification(n);
+        updateViews(((DoctorView)view).getUser(), ((DoctorView)view).getDate());
+    }
+    
 }

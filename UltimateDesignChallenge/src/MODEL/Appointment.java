@@ -10,25 +10,21 @@ package MODEL;
  * @author ianona
  */
 public class Appointment {
-    private String name, startDay, endDay, repeat;
-    private int startTime, endTime;
+    private String name, date, taken;
+    private int time;
     
     // FOR THE DATABASE
     public static final String TABLE = "Appointment";
     public static final String COL_NAME = "Name";
-    public static final String COL_SDAY = "StartDay";
-    public static final String COL_EDAY = "EndDay";
-    public static final String COL_REPEAT = "Repeat";
-    public static final String COL_STIME = "StartTime";
-    public static final String COL_ETIME = "EndTime";
+    public static final String COL_DATE = "Date";
+    public static final String COL_TIME = "Time";
+    public static final String COL_TAKEN = "Taken";
     
-    public Appointment(String name, String startDay, String endDay, String repeat, int startTime, int endTime) {
+    public Appointment(String name, String date, int time, String taken) {
         this.name = name;
-        this.startDay = startDay;
-        this.endDay = endDay;
-        this.repeat = repeat;
-        this.startTime = startTime;
-        this.endTime = endTime;
+        this.time = time;
+        this.date = date;
+        this.taken = taken;
     }
 
     public String getName() {
@@ -39,44 +35,28 @@ public class Appointment {
         this.name = name;
     }
 
-    public String getStartDay() {
-        return startDay;
+    public String getDate() {
+        return date;
     }
 
-    public void setStartDay(String startDay) {
-        this.startDay = startDay;
+    public void setDate(String date) {
+        this.date = date;
     }
 
-    public String getEndDay() {
-        return endDay;
+    public String getTaken() {
+        return taken;
     }
 
-    public void setEndDay(String endDay) {
-        this.endDay = endDay;
+    public void setTaken(String taken) {
+        this.taken = taken;
     }
 
-    public String getRepeat() {
-        return repeat;
+    public int getTime() {
+        return time;
     }
 
-    public void setRepeat(String repeat) {
-        this.repeat = repeat;
-    }
-
-    public int getStartTime() {
-        return startTime;
-    }
-
-    public void setStartTime(int startTime) {
-        this.startTime = startTime;
-    }
-
-    public int getEndTime() {
-        return endTime;
-    }
-
-    public void setEndTime(int endTime) {
-        this.endTime = endTime;
+    public void setTime(int time) {
+        this.time = time;
     }
     
     

@@ -19,16 +19,12 @@ public abstract class TimeslotBuilder {
         controller = mc;
     }
     
-    public ModuleController getController (){
+    public ModuleController getController () {
         return controller;
     }
     
     public Appointment getAppointment () {
         return app;
-    }
-    
-    public void createAppointment(String name, String startDay, String endDay, String repeat, int startTime, int endTime) {
-        app = new Appointment(name, startDay, endDay, repeat, startTime, endTime);
     }
     
     public abstract boolean isAvailable (Appointment app);

@@ -21,6 +21,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 /**
@@ -32,10 +33,11 @@ public class LoginView extends JFrame{
     
     private Container mainPane;
     private JTextField emailTxt;
-    private JTextField passTxt;
+    private JPasswordField passTxt;
     private JLabel emailLbl;
     private JLabel passLbl;
     private JButton submitBtn;
+    private JButton exitBtn;
     private JButton clearBtn;
     private JLabel loginIcon;
     private JLabel errorLbl;
@@ -51,7 +53,7 @@ public class LoginView extends JFrame{
     }
     
     public void initGUI() {
-        this.setSize(600,280);
+        this.setSize(600,295);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setResizable(false);
         
@@ -62,8 +64,9 @@ public class LoginView extends JFrame{
         emailLbl = new JLabel("Email: ");
         passLbl = new JLabel("Password: ");
         emailTxt = new JTextField(15);
-        passTxt = new JTextField(15);
+        passTxt = new JPasswordField(15);
         submitBtn = new JButton("Submit");
+        exitBtn = new JButton("Exit");
         clearBtn = new JButton("Clear");
         errorLbl = new JLabel();
         
@@ -82,6 +85,7 @@ public class LoginView extends JFrame{
         mainPane.add(submitBtn);
         mainPane.add(clearBtn);
         mainPane.add(loginIcon);
+        mainPane.add(exitBtn);
         
         errorLbl.setBounds(150, 190, 200, 30);
         loginIcon.setBounds(250,20,100,100);
@@ -91,9 +95,11 @@ public class LoginView extends JFrame{
         passTxt.setBounds(300, 160, 100, 30);
         submitBtn.setBounds(260,190,100,30);
         clearBtn.setBounds(260,215,100,30);
+        exitBtn.setBounds(260,240,100,30);
         
         submitBtn.addActionListener(new submitBtn_Action());
         clearBtn.addActionListener(new clearBtn_Action());
+        exitBtn.addActionListener(new exitBtn_Action());
         emailTxt.addFocusListener(new FocusAdapter() {
             @Override
             public void focusLost(FocusEvent e) {
@@ -161,6 +167,13 @@ public class LoginView extends JFrame{
         public void actionPerformed (ActionEvent e) {
             emailTxt.setText("");
             passTxt.setText("");
+        }
+    }
+    
+    class exitBtn_Action implements ActionListener{
+        @Override
+        public void actionPerformed (ActionEvent e){
+            System.exit(0);
         }
     }
 }
