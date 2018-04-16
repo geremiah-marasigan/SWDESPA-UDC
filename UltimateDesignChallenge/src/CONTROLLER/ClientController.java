@@ -68,6 +68,14 @@ public class ClientController extends ModuleController {
     public List<Appointment> getAllFilter(String name, String date){
         if (name.equals("All Doctors"))
             return ((ClientService)model).getAllFreeAppointments(date);
+        else if(name.equals("Dr. Reyes")) {
+        	System.out.println("Filtering Dr. Reyes");
+        	return ((ClientService)model).getAllFilter("Reyes",date);
+        }
+        else if(name.equals("Dr. Marasigan")) {
+        	System.out.println("Filtering Dr. Marasigan");
+        	return ((ClientService)model).getAllFilter("Marasigan",date);
+        }
         else
             return ((ClientService)model).getAllFilter(name,date);
     }
