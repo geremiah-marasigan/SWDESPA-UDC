@@ -64,7 +64,7 @@ public class ClientView extends JFrame implements ModuleView {
     private JPanel calendarPanel;
     private int yearBound, monthBound, dayBound, yearToday, monthToday;
     private String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-
+    
     /**
      * ** Agenda and Schedule View Components ***
      */
@@ -89,7 +89,7 @@ public class ClientView extends JFrame implements ModuleView {
     private JLabel oldTimeLbl, newTimeLbl;
     private JComboBox newTimeCmb;
     private JButton editBtn;
-
+    
     public ClientView() {
         this.setSize(900, 660);
         mainPane = this.getContentPane();
@@ -271,6 +271,7 @@ public class ClientView extends JFrame implements ModuleView {
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnApp.png")));
             btnApp.setIcon(new ImageIcon(icon.getImage().getScaledInstance(40, 40, Image.SCALE_DEFAULT)));
+            btnApp.setToolTipText("Make an Appointment");
         } catch (IOException e) {
             System.out.println("FILE NOT FOUND");
         }
@@ -320,15 +321,16 @@ public class ClientView extends JFrame implements ModuleView {
         errorMsg = new JLabel();
         errorMsg.setForeground(Color.red);
         errorMsg.setVisible(false);
-
+        
         GregorianCalendar cal = new GregorianCalendar();
         int dayBound = cal.get(GregorianCalendar.DAY_OF_MONTH);
         int monthBound = cal.get(GregorianCalendar.MONTH) + 1;
         int yearBound = cal.get(GregorianCalendar.YEAR);
-        curDate = monthBound + "/" + dayBound + "/" + yearBound;
+        
+        curDate = monthBound + "/" + dayBound + "/" + yearBound;        
         sDay.setText(curDate);
         eDay.setText(curDate);
-
+        
         sDayLbl.setBounds(5, 5, 100, 25);
         sTimeLbl.setBounds(5, 55, 100, 25);
         eTimeLbl.setBounds(5, 80, 100, 25);
@@ -362,6 +364,17 @@ public class ClientView extends JFrame implements ModuleView {
         pnlApp.add(repeatLbl);
         pnlApp.add(errorMsg);
         pnlApp.add(doctorLbl);
+        
+        sDay.setToolTipText("M/D/Y");
+        eDay.setToolTipText("M/D/Y");
+        sTime.setToolTipText("Enter Available Time");
+        eTime.setToolTipText("Enter Available Time");
+        repeat.setToolTipText("Choose Frequency");
+        doctors.setToolTipText("Select Available Doctor");
+        filter.setToolTipText("View Schedule Of...");
+        btnAdd.setToolTipText("Make Appointment");
+        btnCancel.setToolTipText("Cancel Appointment");
+        btnClear.setToolTipText("Delete All Scheduled Appointments");
     }
 
     @Override
@@ -439,6 +452,7 @@ public class ClientView extends JFrame implements ModuleView {
         pnlEdit.add(oldTimeLbl);
         pnlEdit.add(newTimeLbl);
         pnlEdit.add(newTimeCmb);
+        editBtn.setToolTipText("Edit Appointment");
     }
 
     public void edit(String time) {

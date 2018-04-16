@@ -58,6 +58,7 @@ public class ScheduleItem extends JPanel {
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnDelete.png")));
             btnDelete.setIcon(new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)));
+            btnDelete.setToolTipText("Delete");
         } catch (IOException e) {
             System.out.println("FILE NOT FOUND");
         }
@@ -66,6 +67,7 @@ public class ScheduleItem extends JPanel {
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnEdit.png")));
             btnEdit.setIcon(new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)));
+            btnEdit.setToolTipText("Edit");
         } catch (IOException e) {
             System.out.println("FILE NOT FOUND");
         }
