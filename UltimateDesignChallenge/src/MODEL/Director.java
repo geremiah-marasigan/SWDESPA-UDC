@@ -38,18 +38,18 @@ public class Director {
         return true;
     }
     
-    /*
-    public boolean addApp(String name, String startDay, String endDay, String repeat, int startTime, int endTime) {
-        builder.createAppointment(name, startDay, endDay, repeat, startTime, endTime);
-        Appointment app = builder.getAppointment();
-
-        if (builder.isAvailable(app)) {
-            ((AppointmentBuilder) builder).addAppSlot(app);
-
-            return true;
+    
+    public boolean addApp(List<Appointment> apps) {
+        for (Appointment app:apps) {
+            if (!builder.isAvailable(app))
+                return false;
         }
-
-        return false;
+        
+        // ADDS ALL SLOTS IF POSSIBLE
+        for (Appointment app:apps) {
+            ((AppointmentBuilder) builder).addAppSlot(app);
+        }
+        return true;
     }
-    */
+    
 }

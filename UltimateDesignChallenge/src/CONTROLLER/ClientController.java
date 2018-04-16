@@ -32,46 +32,47 @@ public class ClientController extends ModuleController {
         String date = monthBound + "/" + dayBound + "/" + yearBound;
         
         view.setController(this);
-        System.out.println(model.getAllAppointments());
         
-        view.setScheduleItems(model.getAllAppointments());
-        view.setAgendaItems(model.getAllAppointments(), date);
+        updateViews(date);
     }
     
     public void addAppointment(Appointment app) {
         ((ClientService)model).addAppointment(app);
-        updateViews();
+        updateViews(app.getDate());
     }
     
-    public String getCurDate(){
-        return ((ClientView)view).getCurDate();
+    public void deleteDay(String date, String name) {
+        ((ClientService)model).deleteDay(date,name);
+        updateViews(date);
     }
     
     public void deleteAppointment(Appointment app) {
         ((ClientService)model).deleteAppointment(app);
-        updateViews();
+        updateViews(app.getDate());
     }
     
-    public void deleteRepeat(Appointment app, String date) {
-        ((ClientService)model).addDelete(app, date);
-        updateViews();
-    }
-    
-    public List<User> getFilterUsers(String name){
-        return ((ClientService)model).getFilterUsers(name);
+    public void edit(String time) {
+        ((ClientView)view).edit(time);
     }
     
     public List<Appointment> getAllAppointments(){
         return model.getAllAppointments();
     }
-    public List<Appointment> getAllDeleted(){
-        return ((ClientService)model).getAllDeleted();
+    public List<Appointment> getAllFree(String date){
+        return ((ClientService)model).getAllFreeAppointments(date);
     }
     public List<User> getAllUsers(){
         return model.getAllUsers();
     }
     
-    public void updateViews () {
-        view.updateViews(model.getAllAppointments());
+    public List<Appointment> getAllFilter(String name, String date){
+        if (name.equals("All Doctors"))
+            return ((ClientService)model).getAllFreeAppointments(date);
+        else
+            return ((ClientService)model).getAllFilter(name,date);
+    }
+    
+    public void updateViews (String date) {
+        view.updateViews(model.getSlots(date));
     }
 }

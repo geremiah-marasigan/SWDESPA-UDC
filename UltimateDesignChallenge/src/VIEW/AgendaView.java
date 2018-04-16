@@ -71,6 +71,10 @@ public class AgendaView extends JPanel {
              */
         } // CLIENT (CAN SEE ALL HIS/HER APPOINTMENTS)
         else if (controller instanceof ClientController) {
+            for(Appointment app :apps){
+                if (app.getTaken().equals("NOT_TAKEN"))
+                    items.add(new AgendaItem(controller, app));
+            }
             /*
             List<User> tempUsers = ((ClientController) controller).getAllUsers();
             List<Appointment> delete = ((ClientController) controller).getAllDeleted();
@@ -186,15 +190,7 @@ public class AgendaView extends JPanel {
         return days;
     }
 
-    public boolean notDeleted(Appointment app, String date, List<Appointment> delapps) {
-        for (Appointment a : delapps) {
-            if (date.equalsIgnoreCase(a.getStartDay()) && app.getStartTime() == a.getStartTime() && app.getEndTime() == a.getEndTime()) {
-                return false;
-            }
-        }
-        return true;
-    }
-
+    
     public void filterItems(List<Appointment> apps, String date, String name) {
         if (controller instanceof SecretaryController) { //SECRETARY VIEW
             for (int i = 0; i < items.size(); i++) {
@@ -205,15 +201,7 @@ public class AgendaView extends JPanel {
 
             for (int i = 0; i < apps.size(); i++) {
                 System.out.println("Date is " + date);
-                if (checkDate(apps.get(i).getStartDay(), apps.get(i).getEndDay(), date, apps.get(i).getRepeat())) {
-                    if (name.equals("All")) //if secretary selects "All" doctors view
-                    {
-                        items.add(new AgendaItem(controller, apps.get(i)));
-                    } else if (apps.get(i).getName().equals(name)) //if secretary selects a specific doctor view
-                    {
-                        items.add(new AgendaItem(controller, apps.get(i)));
-                    }
-                }
+                
             }
 
             // ADDS PANEL TO THE GUI

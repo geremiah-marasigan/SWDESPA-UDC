@@ -72,7 +72,7 @@ public abstract class ModuleService {
     public List<Appointment> getAllAppointments() {
 	List <Appointment> apps = new ArrayList <> ();
 	Connection connect = connection.getConnection();
-	String query = 	"SELECT * " + " FROM " + Appointment.TABLE  +" ORDER BY " + Appointment.COL_DATE +", "+Appointment.COL_TIME;
+	String query = 	"SELECT * " + " FROM " + Appointment.TABLE;
 
         try {
             PreparedStatement statement = connect.prepareStatement(query);

@@ -314,7 +314,6 @@ public class DoctorView extends JFrame implements ModuleView {
         btnCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 pnlApp.setVisible(false);
-                pnlEdit.setVisible(false);
             }
         });
         sDay = new JTextField(10);

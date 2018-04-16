@@ -71,7 +71,11 @@ public class ScheduleView extends JPanel {
 
                 } // CLIENT (CAN SEE ALL HIS/HER APPOINTMENTS)
                 else if (controller instanceof ClientController) {
-
+                    
+                    if (times.contains(timecheck))
+                        items.add(new ScheduleItem(controller,time,getApp(timecheck,apps),user));
+                    else 
+                        items.add(new ScheduleItem(controller,time));
                 }
             }
         }
@@ -84,6 +88,14 @@ public class ScheduleView extends JPanel {
 
         revalidate();
         repaint();
+    }
+    
+    public Appointment getApp(int time, List<Appointment> apps){
+        for (Appointment app: apps){
+            if (time == app.getTime())
+                return app;
+        }
+        return null;
     }
     
     public List<Appointment> getApps(int time, List<Appointment> apps) {

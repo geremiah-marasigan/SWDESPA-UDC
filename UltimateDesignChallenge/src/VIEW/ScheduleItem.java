@@ -5,6 +5,7 @@
  */
 package VIEW;
 
+import CONTROLLER.ClientController;
 import CONTROLLER.DoctorController;
 import CONTROLLER.ModuleController;
 import MODEL.Appointment;
@@ -77,24 +78,17 @@ public class ScheduleItem extends JPanel {
     }
 
     // CLIENT
-    public ScheduleItem(ModuleController c, String time, Appointment app, String type) {
+    public ScheduleItem(ModuleController c, String time, Appointment app, User user) {
         this();
         this.controller = c;
-        if (type.equals("doctor")) {
-            this.name.setText("Dr. " + app.getName());
-        } else if (type.equals("client")) {
-            this.name.setText("Taken");
+        this.app = app;
+        this.setBackground(Color.white);
 
-        } else {
-            this.name.setText("");
-        }
-
-        if (type.equals("doctor")) {
+        if (app.getTaken().equals(user.getLastname())) {
             this.setBackground(new Color(186, 255, 133));
-        } else if (type.equals("client")) {
-            this.setBackground(Color.RED);
-        } else {
-            this.setBackground(Color.white);
+            this.name.setText("Dr. " + app.getName());
+            this.add(btnDelete);
+            this.add(btnEdit);
         }
 
         this.time.setText(time);
@@ -114,7 +108,7 @@ public class ScheduleItem extends JPanel {
                 this.name.setText("FREE SLOT");
                 this.add(btnDelete);
                 this.add(btnEdit);
-                
+
             } else {
                 this.setBackground(new Color(186, 255, 133).darker());
                 this.name.setText("APPOINTMENT W/ " + apps.get(0).getTaken());
@@ -186,7 +180,12 @@ public class ScheduleItem extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            ((DoctorController) controller).edit(time.getText());
+            if (controller instanceof DoctorController) {
+                ((DoctorController) controller).edit(time.getText());
+            } else if (controller instanceof ClientController) {
+                ((ClientController) controller).edit(time.getText());
+            }
+
         }
     }
 
@@ -194,15 +193,19 @@ public class ScheduleItem extends JPanel {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            int sTime = Integer.valueOf(time.getText().replace(":", ""));
-            int eTime = sTime + 30;
-            if (eTime % 100 >= 60) {
-                eTime = ((eTime / 100) + 1) * 100;
+//            int sTime = Integer.valueOf(time.getText().replace(":", ""));
+//            int eTime = sTime + 30;
+//            if (eTime % 100 >= 60) {
+//                eTime = ((eTime / 100) + 1) * 100;
+//            }
+//            if (eTime / 100 >= 24) {
+//                eTime = 0;
+//            }
+            if (controller instanceof DoctorController) {
+                ((DoctorController) controller).deleteAppointment(app);
+            } else if (controller instanceof ClientController) {
+                ((ClientController) controller).deleteAppointment(app);
             }
-            if (eTime / 100 >= 24) {
-                eTime = 0;
-            }
-            ((DoctorController) controller).deleteAppointment(app);
         }
     }
 }
