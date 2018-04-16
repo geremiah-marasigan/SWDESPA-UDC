@@ -519,12 +519,12 @@ public class ClientView extends JFrame implements ModuleView {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            List<Appointment> appsToAdd = new ArrayList<>();
+            
             System.out.println(oldTimeLbl.getText().split(" ")[1].replaceAll(":", ""));
             int oldTime = Integer.valueOf(oldTimeLbl.getText().split(" ")[2].replaceAll(":", ""));
             int newTime = Integer.valueOf(((String) newTimeCmb.getSelectedItem()).replaceAll(":", ""));
             curDoctor = ((String) doctors.getSelectedItem()).split(" ")[1];
-            appsToAdd.add(new Appointment(curDoctor, curDate, newTime, user.getLastname()));
+            Appointment appsToAdd = (new Appointment(curDoctor, curDate, newTime, user.getLastname()));
 
             director.setTimeslotBuilder(new AppointmentBuilder(), controller);
             if (director.addApp(appsToAdd)) {

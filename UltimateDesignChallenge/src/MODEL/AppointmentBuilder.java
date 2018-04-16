@@ -15,16 +15,27 @@ import java.util.List;
  */
 public class AppointmentBuilder extends TimeslotBuilder {
 
+    private boolean swap;
+
     @Override
     public boolean isAvailable(Appointment app) {
         List<Appointment> free = ((ClientController) controller).getAllFree(app.getDate());
         if (inTime(app, free)) {
-            if (doctorCheck(app)) {
+            if (!swap) {
+                if (doctorCheck(app)) {
+                    return true;
+                }
+            }
+            else{
                 return true;
             }
         }
         System.out.println("ERROR IN AVAILABLE");
         return false;
+    }
+
+    public void setSwap(boolean swap) {
+        this.swap = swap;
     }
 
     private boolean inTime(Appointment app, List<Appointment> free) {

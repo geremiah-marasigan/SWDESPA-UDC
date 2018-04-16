@@ -24,28 +24,42 @@ public class Director {
         builder.setController(mc);
     }
 
-    public boolean addAppSlot(List<Appointment> appSlots) {        
+    public boolean addAppSlot(List<Appointment> appSlots) {
         // CHECKS IF ALL SlOTS CAN BE ADDED
-        for (Appointment app:appSlots) {
-            if (!builder.isAvailable(app))
+        for (Appointment app : appSlots) {
+            if (!builder.isAvailable(app)) {
                 return false;
+            }
         }
-        
+
         // ADDS ALL SLOTS IF POSSIBLE
-        for (Appointment app:appSlots) {
+        for (Appointment app : appSlots) {
             ((AppointmentSlotBuilder) builder).addAppSlot(app);
         }
         return true;
     }
-    
-    public boolean addApp(List<Appointment> apps) {
-        for (Appointment app:apps) {
-            if (!builder.isAvailable(app))
-                return false;
+
+    public boolean addApp(Appointment apps) {
+        ((AppointmentBuilder) builder).setSwap(true);
+        if (!builder.isAvailable(apps)) {
+            return false;
         }
-        
         // ADDS ALL SLOTS IF POSSIBLE
-        for (Appointment app:apps) {
+        ((AppointmentBuilder) builder).addAppSlot(apps);
+
+        return true;
+    }
+
+    public boolean addApp(List<Appointment> apps) {
+        ((AppointmentBuilder) builder).setSwap(false);
+        for (Appointment app : apps) {
+            if (!builder.isAvailable(app)) {
+                return false;
+            }
+        }
+
+        // ADDS ALL SLOTS IF POSSIBLE
+        for (Appointment app : apps) {
             ((AppointmentBuilder) builder).addAppSlot(app);
         }
         return true;
