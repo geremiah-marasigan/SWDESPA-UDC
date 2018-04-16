@@ -19,7 +19,12 @@ public class AppointmentBuilder extends TimeslotBuilder {
 
     @Override
     public boolean isAvailable(Appointment app) {
-        List<Appointment> free = ((ClientController) controller).getAllFree(app.getDate());
+        List<Appointment> free = null;
+        if(controller instanceof ClientController)
+            free = ((ClientController)controller).getAllFree(app.getDate());
+        else if(controller instanceof SecretaryController)
+            free = ((SecretaryController)controller).getAllFree(app.getDate());
+        
         if (inTime(app, free)) {
             if (!swap) {
                 if (doctorCheck(app)) {
@@ -51,8 +56,12 @@ public class AppointmentBuilder extends TimeslotBuilder {
     }
 
     private boolean doctorCheck(Appointment app) {
-        List<Appointment> check = ((ClientController) controller).getSlot(app.getDate(), app.getTime());
-
+        List<Appointment> check = null;
+        if(controller instanceof ClientController){
+            check = ((ClientController) controller).getSlot(app.getDate(), app.getTime());
+        } else if(controller instanceof SecretaryController)
+            check = ((SecretaryController) controller).getSlot(app.getDate(), app.getTime());
+        
         for (Appointment time : check) {
             System.out.println(time.getTaken() + time.getName() + time.getDate() + " " + time.getTime());
             if (!time.getTaken().equals("NOT_TAKEN")) {
@@ -69,7 +78,7 @@ public class AppointmentBuilder extends TimeslotBuilder {
             System.out.println(app.getTaken() + app.getName() + app.getDate() + " " + app.getTime());
             ((ClientController) controller).addAppointment(app);
         } else if (controller instanceof SecretaryController) {
-            //((SecretaryController) controller).addAppointment(app);
+            ((SecretaryController) controller).addAppointment(app);
         }
     }
 }
