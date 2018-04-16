@@ -15,9 +15,18 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.IOException;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimerTask;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
@@ -59,7 +68,10 @@ public class SecretaryView extends JFrame implements ModuleView {
     private AgendaView av;
     private ScheduleView sv;
     private JLabel agendaLbl, schedLbl;
-    private String curDate;
+    private String curDate, curDoctor;
+    private JButton btnWeeklyAgenda, btnWeeklySchedule;
+    private WeeklyView wv;
+    private WeeklyAgendaView wav;
     
     /**** Notification ****/
     private JButton bttnNotify, bttnNotifyAll;
@@ -156,7 +168,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         for(int i = 0; i < docList.size(); i++){
             docNames[i] = "Dr. " + docArray[i].getFirstname() + " " + docArray[i].getLastname();
             //docAgenda[i+1] = docArray[i].getFirstname() + " " + docArray[i].getLastname();
-            docAgenda[i+1] = docArray[i].getFirstname();
+            docAgenda[i+1] = docArray[i].getLastname();
         }
         cmbNotify = new JComboBox(docNames);
         cmbNotify.setBounds(115,450, 100, 25);
@@ -175,7 +187,6 @@ public class SecretaryView extends JFrame implements ModuleView {
         cmbAgenda = new JComboBox(docAgenda);
         cmbAgenda.setBounds(510, 10, 100, 25);
         mainPane.add(cmbAgenda);
-        runTimer();
         
         bttnNotify.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){
@@ -197,51 +208,54 @@ public class SecretaryView extends JFrame implements ModuleView {
         
         cmbAgenda.addActionListener(new cmbAgenda_Action());
         
+        btnWeeklyAgenda = new JButton("Weekly [A]");
+        btnWeeklyAgenda.setBounds(400, 10, 100, 25);
+        mainPane.add(btnWeeklyAgenda);
+
+        btnWeeklySchedule = new JButton("Weekly [S]");
+        btnWeeklySchedule.setBounds(770, 10, 100, 25);
+        mainPane.add(btnWeeklySchedule);
+        
+        btnWeeklySchedule.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                wv = new WeeklyView(controller, getWeekInfo(), user);
+            }
+        });
+
+        btnWeeklyAgenda.addActionListener(new ActionListener(){
+            public void actionPerformed(ActionEvent e){
+                wav = new WeeklyAgendaView(controller, getWeekInfo(), user);
+            }
+        });
+        
         btnWalkIn = new JButton("Add Walk-in Appointment");
         btnWalkIn.setBounds(310, 495, 200, 25);
         mainPane.add(btnWalkIn);
         btnWalkIn.addActionListener(new btnWalkIn_Action());
 
         walkInTools();
-    }
-
-    @Override
-    public void setUser(User user) {
-        this.user = user;
-        setTitle("Secretary Module - Secretary " + user.getFirstname());
-    }
-
-    @Override
-    public void setScheduleItems(List<Appointment> apps) {
-        sv.setItems();
-    }
-
-    @Override
-    public void setAgendaItems(List<Appointment> apps, String date) {
-        av.setItems(apps, date);
-    }
-
-    @Override
-    public void updateViews(List<Appointment> apps) {
-        sv.setItems(apps, docList, curDate);
-        av.setItems(apps, curDate);
-    }
-    
-    public void filterViews(List<Appointment> apps, String name) {
-        sv.filterItems(apps, docList, curDate, name);
-        av.filterItems(apps, curDate, name);
+        runTimer();
     }
 
     public void runTimer(){
         timerTask = new TimerTask(){
             @Override
             public void run(){
-                System.out.println("test");
+                ((SecretaryController) controller).updateViews(curDate);
+                refreshCalendar(monthToday, yearToday);
             }
         };
         timer = new java.util.Timer(true);
         timer.scheduleAtFixedRate(timerTask, 5000, 5000);
     }
+    
+    @Override
+    public void setUser(User user) {
+        this.user = user;
+        setTitle("Secretary Module - Secretary " + user.getFirstname());
+    }
+
+    
     @Override
     public void initCalendar() {
         modelCalendarTable = new DefaultTableModel() {
@@ -452,7 +466,62 @@ public class SecretaryView extends JFrame implements ModuleView {
             modelCalendarTable.setValueAt(i, row, column);
         }
 
-        calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0), new TableRenderer());
+        calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0), new TableRenderer((SecretaryController)controller, month, year));
+    }
+
+    @Override
+    public void setScheduleItems(List<Appointment> apps) {
+        sv.setItems(apps, docList.get(1));
+    }
+
+    @Override
+    public void setAgendaItems(List<Appointment> apps, String date) {
+        av.setItems(apps);
+    }
+
+    @Override
+    public void updateViews(List<Appointment> apps) {
+        sv.setItems(apps, docList.get(1));
+        av.setItems(apps);
+    }
+    
+    public void filterViews(List<Appointment> apps, String name) {
+        
+        sv.filterItems(apps, docList, curDate, name);
+        av.filterItems(apps, curDate, name);
+    }
+    
+    public List<String[]> getWeekInfo() {
+        GregorianCalendar cal = new GregorianCalendar(Integer.valueOf(curDate.split("/")[2]), Integer.valueOf(curDate.split("/")[0]) - 1, Integer.valueOf(curDate.split("/")[1]));
+        int weekOfYear = cal.get(Calendar.WEEK_OF_YEAR);
+        cal.set(Calendar.WEEK_OF_YEAR, weekOfYear);
+        SimpleDateFormat sdf = new SimpleDateFormat("M d yyyy");
+
+        List<String[]> weekInfo;
+        weekInfo = new ArrayList<String[]>();
+
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
+        weekInfo.add(sdf.format(cal.getTime()).split(" "));
+
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);
+        weekInfo.add(sdf.format(cal.getTime()).split(" "));
+
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.TUESDAY);
+        weekInfo.add(sdf.format(cal.getTime()).split(" "));
+
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.WEDNESDAY);
+        weekInfo.add(sdf.format(cal.getTime()).split(" "));
+
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.THURSDAY);
+        weekInfo.add(sdf.format(cal.getTime()).split(" "));
+
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.FRIDAY);
+        weekInfo.add(sdf.format(cal.getTime()).split(" "));
+
+        cal.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
+        weekInfo.add(sdf.format(cal.getTime()).split(" "));
+
+        return weekInfo;
     }
     
     class calListener extends MouseAdapter {
@@ -463,7 +532,7 @@ public class SecretaryView extends JFrame implements ModuleView {
                 agendaLbl.setText("Agenda for " + curDate);
                 schedLbl.setText("Schedule for " + curDate);
                 cmbAgenda.setSelectedIndex(0);
-                ((SecretaryController)controller).updateViews();
+                ((SecretaryController)controller).updateViews(curDate);
         }
     }
     
@@ -529,23 +598,76 @@ public class SecretaryView extends JFrame implements ModuleView {
             String choice = String.valueOf(repeat.getSelectedItem());
             String startD = sDay.getText();
             String endD = null;
-            if (choice.equalsIgnoreCase("None")) 
+            if (choice.equalsIgnoreCase("None")) {
                 endD = startD;
-            else 
+            } else {
                 endD = eDay.getText();
+            }
             int startT = Integer.parseInt(sTime.getSelectedItem().toString().replace(":", ""));
             int endT = Integer.parseInt(eTime.getSelectedItem().toString().replace(":", ""));
             
-            director.setTimeslotBuilder(new AppointmentBuilder(), controller);
-            if (director.addAppSlot(name.getText(), startD, endD, choice, startT, endT)) {
-                pnlApp.setVisible(false); 
-                errorMsg.setVisible(false);
+            List<Appointment> appsToAdd = new ArrayList<>();
+            SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
+            Calendar c = Calendar.getInstance();
+            String date = startD;
+            curDoctor = ((String)doc.getSelectedItem()).split(" ")[1];
+            
+            System.out.println("Current Doc: " + curDoctor);
+            
+            for (int i = 0; i < daysBetween(startD, endD) + 1; i++) {
+                int time = startT;
+                while (time != endT) {
+                    appsToAdd.add(new Appointment(curDoctor,date,time,name.getText()));
+                    time += 30;
+                    if (time % 100 >= 60) {
+                        time = ((time / 100) + 1) * 100;
+                    }
+                    if (time / 100 >= 24) {
+                        time = 0;
+                    }
+                }
+                try {
+                    c.setTime(sdf.parse(date));
+                    c.add(Calendar.DATE, 1);
+                    date = sdf.format(c.getTime());
+                } catch (ParseException ex) {
+                    Logger.getLogger(DoctorView.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
-            else {
-                errorMsg.setText("ERROR! Conflicting Appointment Slots");
+            
+            for(int j = 0; j < appsToAdd.size(); j++)
+            {
+                System.out.println("APPS TO ADD: ");
+                System.out.println("Name: " + appsToAdd.get(j).getName());
+                System.out.println("Name: " + appsToAdd.get(j).getDate());
+                System.out.println("Name: " + appsToAdd.get(j).getTime());
+                System.out.println("Name: " + appsToAdd.get(j).getTaken());
+            }
+            
+            director.setTimeslotBuilder(new AppointmentBuilder(),controller);
+            if (director.addApp(appsToAdd)) {
+                pnlApp.setVisible(false);
+                errorMsg.setVisible(false);
+            } else {
+                pnlApp.add(errorMsg);
+                errorMsg.setText("<html>ERROR! Conflicting<br/>Appointment Slots</html>");
                 errorMsg.setVisible(true);
             }
+            
+            if(errorMsg.isVisible() == false)
+            {
+                pnlApp.setVisible(false);
+                btnWalkIn.setVisible(true);
+            }
         } 
+    }
+    
+    public long daysBetween(String date1, String date2) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+        LocalDate firstDate = LocalDate.parse(date1, formatter);
+        LocalDate secondDate = LocalDate.parse(date2, formatter);
+        long days = ChronoUnit.DAYS.between(firstDate, secondDate);
+        return days;
     }
     
     class repeat_Action implements ActionListener {

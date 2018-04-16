@@ -9,7 +9,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  *
@@ -32,7 +34,7 @@ public class SecretaryService extends ModuleService{
             today = Calendar.getInstance();
             System.out.println(today.toString());
             String todayString;
-            todayString = "" + today.get(Calendar.YEAR) + "/" + today.get(Calendar.MONTH) + "/" + today.get(Calendar.DAY_OF_MONTH) + " " + today.get(Calendar.HOUR_OF_DAY) + ":" + today.get(Calendar.MINUTE);
+            todayString = "" + (today.get(Calendar.MONTH)+1) + "/" + today.get(Calendar.DAY_OF_MONTH) + "/" + today.get(Calendar.YEAR) + " " + today.get(Calendar.HOUR_OF_DAY) + ":" + today.get(Calendar.MINUTE);
             statement.setString(2, todayString);  
             statement.setString(3, msg);
             statement.executeUpdate();
@@ -47,42 +49,42 @@ public class SecretaryService extends ModuleService{
     
     public void addAppointment(Appointment a) {
         Connection connect = connection.getConnection();
-        String query = 	"INSERT INTO " + Appointment.TABLE +
-			" VALUES (?, ?, ?, ?, ?, ?)";
+        String query = "UPDATE " + Appointment.TABLE
+                + " SET " + Appointment.COL_TAKEN + " = ? WHERE " + Appointment.COL_TIME + " = ? AND " + Appointment.COL_NAME + " = ? AND " + Appointment.COL_DATE + " = ?";
         try {
             PreparedStatement statement = connect.prepareStatement(query);
-			
-            statement.setString(1, a.getName());
-            statement.setString(2, a.getStartDay());
-            statement.setString(3, a.getEndDay());
-            statement.setString(4, a.getRepeat());
-            statement.setInt(5, a.getStartTime());
-            statement.setInt(6, a.getEndTime());
-			
+
+            statement.setString(1, a.getTaken());
+            statement.setInt(2, a.getTime());
+            statement.setString(3, a.getName());
+            statement.setString(4, a.getDate());
+
             statement.executeUpdate();
             statement.close();
             connect.close();
-            System.out.println("[Appointment] INSERT SUCCESS!");
+            System.out.println("[Appointment] UPDATE SUCCESS!");
         } catch (SQLException ev) {
             ev.printStackTrace();
-            System.out.println("[Appointment] INSERT FAILED!");
-        }	
-    }
+            System.out.println("[Appointment] UPDATE FAILED!");
+        }
+    }	
     
     public void deleteAppointment(Appointment app) {
 	Connection connect = connection.getConnection();
 	String query = 	"DELETE FROM " + 
 			Appointment.TABLE +
 			" WHERE " + Appointment.COL_NAME + " = ? AND " +
-                                    Appointment.COL_STIME + " = ? AND " +
-                                    Appointment.COL_ETIME + " = ? ";
+                                    Appointment.COL_DATE + " = ? AND " +
+                                    Appointment.COL_TIME + " = ? AND " +
+                                    Appointment.COL_TAKEN + " = ?";
 		
 	try {
             PreparedStatement statement = connect.prepareStatement(query);
 			
             statement.setString(1, app.getName());
-            statement.setInt(2, app.getStartTime());
-            statement.setInt(3, app.getEndTime());
+            statement.setString(2, app.getDate());
+            statement.setInt(3, app.getTime());
+            statement.setString(4, app.getTaken());
             statement.executeUpdate();
 			
             statement.close();
@@ -94,40 +96,60 @@ public class SecretaryService extends ModuleService{
 	}	
     }
     
-    private User toUser(ResultSet rs) throws SQLException {
-	User user = new User(rs.getString(User.COL_EMAIL),
-                             rs.getString(User.COL_PASSWORD),
-                             rs.getString(User.COL_TYPE),
-                             rs.getString(User.COL_FIRSTNAME),
-                             rs.getString(User.COL_LASTNAME));
-        
-	return user;
-    }
-    
-    public String getTypeOfUserGivenAppointment(String name){
-        User user;
-	Connection connect = connection.getConnection();
-	String query = 	"SELECT * " + " FROM " + User.TABLE + " WHERE " + User.COL_FIRSTNAME + " = ?";
+    public List<Appointment> getAllFreeAppointments(String date) {
+        List<Appointment> apps = new ArrayList<>();
+        Connection connect = connection.getConnection();
+        String query = "SELECT * " + " FROM " + Appointment.TABLE + " WHERE " + Appointment.COL_DATE + " =? AND " + Appointment.COL_TAKEN + " = 'NOT_TAKEN'";
 
         try {
             PreparedStatement statement = connect.prepareStatement(query);
-            statement.setString(1,name);
-            
+            statement.setString(1, date);
             ResultSet rs = statement.executeQuery();
-            rs.next();
-            user = toUser(rs);
+
+            while (rs.next()) {
+                apps.add(toAppointment(rs));
+            }
+
+            rs.close();
+            statement.close();
+            connect.close();
+
+            //    System.out.println("[Appointment] SELECT SUCCESS!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            //    System.out.println("[Appointment] SELECT FAILED!");
+            return null;
+        }
+
+        return apps;
+    }
+    
+    public List<Appointment> getSlot(String date, String time) {
+	List <Appointment> apps = new ArrayList <> ();
+	Connection connect = connection.getConnection();
+	String query = 	"SELECT * " + " FROM " + Appointment.TABLE  + " WHERE " + Appointment.COL_DATE + " = ? AND " + Appointment.COL_TIME + " =?";
+
+        try {
+            PreparedStatement statement = connect.prepareStatement(query);
+            statement.setString(1, date);
+            statement.setString(2, time);
+            ResultSet rs = statement.executeQuery();
+			
+            while(rs.next()) {
+		apps.add(toAppointment(rs));
+            }
 			
             rs.close();
             statement.close();
             connect.close();
 	
-            System.out.println("[Type] SELECT SUCCESS!");
+        //    System.out.println("[Appointment] SELECT SUCCESS!");
 	} catch (SQLException e) {
             e.printStackTrace();
-            System.out.println("[Type] SELECT FAILED!");
-            return "";
+        //    System.out.println("[Appointment] SELECT FAILED!");
+            return null;
 	}	
 		
-        return user.getType();
+        return apps;
     }
 }

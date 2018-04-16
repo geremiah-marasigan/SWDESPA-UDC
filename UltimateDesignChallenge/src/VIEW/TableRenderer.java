@@ -4,8 +4,11 @@
  */
 package VIEW;
 
+import CONTROLLER.SecretaryController;
+import MODEL.Appointment;
 import java.awt.Color;
 import java.awt.Component;
+import java.util.List;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 
@@ -15,6 +18,16 @@ import javax.swing.table.DefaultTableCellRenderer;
  */
 public class TableRenderer extends DefaultTableCellRenderer
 {
+    private SecretaryController controller;
+    private int monthSelected, yearSelected;
+    public TableRenderer(){
+
+    }
+    public TableRenderer(SecretaryController ctrl, int month, int year){
+    controller = ctrl;
+    monthSelected = month;
+    yearSelected = year;
+    }
     @Override
     public Component getTableCellRendererComponent (JTable table, Object value, boolean selected, boolean focused, int row, int column)
     {
@@ -30,6 +43,23 @@ public class TableRenderer extends DefaultTableCellRenderer
                     setBackground(new Color(75,122,145));
                 else
                     setBackground(Color.WHITE);
+            
+            if(value != null && controller != null){
+                List<Appointment> apps = controller.getAllAppointments();
+                for(Appointment a: apps){
+
+                    int dayMonth = Integer.valueOf(a.getDate().split("/")[0]) - 1;
+                    int dayYear = Integer.valueOf(a.getDate().split("/")[2]);
+                    int dayDay = Integer.valueOf(a.getDate().split("/")[1]);
+                    if(Integer.valueOf(value.toString()) == dayDay &&
+                       monthSelected == dayMonth &&
+                       yearSelected == dayYear &&
+                       a.getTaken().equals("NOT_TAKEN")){
+                        setBackground(new Color(178, 34, 34));
+                        System.out.println(a.getName());
+                    }
+                }
+            }
             
             if (selected) {
             Color c = this.getBackground();

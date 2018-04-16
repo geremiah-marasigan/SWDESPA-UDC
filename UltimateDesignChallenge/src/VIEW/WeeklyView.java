@@ -119,4 +119,27 @@ public class WeeklyView extends JFrame {
         revalidate();
         repaint();
     }
+    
+    public void updateS (List<String[]> weekInfo) {
+        this.weekInfo = weekInfo;
+        List<Appointment>apps = ((SecretaryController)controller).getAllAppointments();
+        List<User>users = ((SecretaryController)controller).getAllUsers();
+        suView.setItems(((SecretaryController)controller).getSlots(weekInfo.get(0)[0] + "/"+ weekInfo.get(0)[1] +"/"+ weekInfo.get(0)[2]),user);
+        suScroll.setBorder(BorderFactory.createTitledBorder("Sun: "+ weekInfo.get(0)[0] + "/"+ weekInfo.get(0)[1] +"/"+ weekInfo.get(0)[2]));
+        mView.setItems(((SecretaryController)controller).getSlots(weekInfo.get(1)[0] + "/"+ weekInfo.get(1)[1] +"/"+ weekInfo.get(1)[2]),user);
+        mScroll.setBorder(BorderFactory.createTitledBorder("Mon: "+ weekInfo.get(1)[0] + "/"+ weekInfo.get(1)[1] +"/"+ weekInfo.get(1)[2]));
+        tView.setItems(((SecretaryController)controller).getSlots(weekInfo.get(2)[0] + "/"+ weekInfo.get(2)[1] +"/"+ weekInfo.get(2)[2]),user);
+        tScroll.setBorder(BorderFactory.createTitledBorder("Tue: "+ weekInfo.get(2)[0] + "/"+ weekInfo.get(2)[1] +"/"+ weekInfo.get(2)[2]));
+        wView.setItems(((SecretaryController)controller).getSlots(weekInfo.get(3)[0] + "/"+ weekInfo.get(3)[1] +"/"+ weekInfo.get(3)[2]),user);
+        wScroll.setBorder(BorderFactory.createTitledBorder("Wed: "+ weekInfo.get(3)[0] + "/"+ weekInfo.get(3)[1] +"/"+ weekInfo.get(3)[2]));
+        hView.setItems(((SecretaryController)controller).getSlots(weekInfo.get(4)[0] + "/"+ weekInfo.get(4)[1] +"/"+ weekInfo.get(4)[2]),user);
+        hScroll.setBorder(BorderFactory.createTitledBorder("Thu: "+ weekInfo.get(4)[0] + "/"+ weekInfo.get(4)[1] +"/"+ weekInfo.get(4)[2]));
+        fView.setItems(((SecretaryController)controller).getSlots(weekInfo.get(5)[0] + "/"+ weekInfo.get(5)[1] +"/"+ weekInfo.get(5)[2]),user);
+        fScroll.setBorder(BorderFactory.createTitledBorder("Fri: "+ weekInfo.get(5)[0] + "/"+ weekInfo.get(5)[1] +"/"+ weekInfo.get(5)[2]));
+        stView.setItems(((SecretaryController)controller).getSlots(weekInfo.get(6)[0] + "/"+ weekInfo.get(6)[1] +"/"+ weekInfo.get(6)[2]),user);
+        stScroll.setBorder(BorderFactory.createTitledBorder("Sat: "+ weekInfo.get(6)[0] + "/"+ weekInfo.get(6)[1] +"/"+ weekInfo.get(6)[2]));
+
+        revalidate();
+        repaint();
+    }
 }

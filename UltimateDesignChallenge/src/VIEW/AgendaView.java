@@ -59,19 +59,15 @@ public class AgendaView extends JPanel {
             }
         } // SECRETARY (CAN SEE EVERYONE)
         else if (controller instanceof SecretaryController) {
-            /*
-            for (int i = 0; i < apps.size(); i++) {
-                System.out.println("Sammie is " + date);
-                if (checkDate(apps.get(i).getStartDay(), apps.get(i).getEndDay(), date, apps.get(i).getRepeat())) {
-                    items.add(new AgendaItem(controller, apps.get(i)));
-                }
+            for (Appointment app : apps) {
+                items.add(new AgendaItem(controller, app));
             }
-             */
         } // CLIENT (CAN SEE ALL HIS/HER APPOINTMENTS)
         else if (controller instanceof ClientController) {
-            for(Appointment app :apps){
-                if (app.getTaken().equals(user.getLastname()))
+            for (Appointment app : apps) {
+                if (app.getTaken().equals(user.getLastname())) {
                     items.add(new AgendaItem(controller, app));
+                }
             }
         }
 
@@ -85,6 +81,9 @@ public class AgendaView extends JPanel {
                 items.add(AgendaItem.createEmptyDoctor());
             }
             if (controller instanceof ClientController) {
+                items.add(AgendaItem.createEmptyClient());
+            }
+            if (controller instanceof SecretaryController) {
                 items.add(AgendaItem.createEmptyClient());
             }
             add(items.get(0));
@@ -127,6 +126,30 @@ public class AgendaView extends JPanel {
 
         } // SECRETARY (CAN SEE EVERYONE)
         else if (controller instanceof SecretaryController) {
+            System.out.println("Sammie");
+            for (String[] info : weekInfo) {
+                System.out.println("ME!");
+                SimpleDateFormat simpleDateformat = new SimpleDateFormat("E"); // the day of the week abbreviated
+
+                String startDateString = info[0] + "/" + info[1] + "/" + info[2];
+                DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+                Date startDate;
+
+                try {
+                    startDate = df.parse(startDateString);
+                    items.add(AgendaItem.createTitle(simpleDateformat.format(startDate) + ": " + info[0] + "/" + info[1] + "/" + info[2]));
+                } catch (ParseException ex) {
+                    Logger.getLogger(WeeklyAgendaView.class.getName()).log(Level.SEVERE, null, ex);
+                }
+
+                List<Appointment> apps = ((SecretaryController) controller).getSlots(info[0] + "/" + info[1] + "/" + info[2]);
+                //List<Appointment> apps = ((SecretaryController)controller).getAllAppointments();
+                System.out.println("Date: " + info[0] + "/" + info[1] + "/" + info[2] + "; Length: " + apps.size());
+                for (Appointment app : apps) {
+                    System.out.println("TEDx");
+                    items.add(new AgendaItem(controller, app));
+                }
+            }
         }
 
         // ADDS PANELS TO THE GUI
@@ -140,69 +163,35 @@ public class AgendaView extends JPanel {
         repaint();
     }
 
-    public boolean checkDate(String startDay, String endDay, String curDay, String repeat) {
-        switch (repeat) {
-            case "None":
-                if (startDay.equalsIgnoreCase(curDay)) {
-                    return true;
+    public void filterItems(List<Appointment> apps, String date, String name) {
+        if (controller instanceof SecretaryController) { //SECRETARY VIEW
+            for (int i = 0; i < items.size(); i++) {
+                remove(items.get(i));
+            }
+
+            items.clear();
+
+            for (int i = 0; i < apps.size(); i++) {
+                System.out.println("Date is " + date);
+                //if (checkDate(apps.get(i).getStartDay(), apps.get(i).getEndDay(), date, apps.get(i).getRepeat())) {
+                if (apps.get(i).getDate().equals(date)) {
+                    if (name.equals("All")) //if secretary selects "All" doctors view
+                    {
+                        items.add(new AgendaItem(controller, apps.get(i)));
+                    } else if (apps.get(i).getName().equals(name)) //if secretary selects a specific doctor view
+                    {
+                        items.add(new AgendaItem(controller, apps.get(i)));
+                    }
                 }
-            case "Daily":
-                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0) {
-                    return true;
-                }
-            case "Monthly":
-                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0 && (Integer.valueOf(curDay.split("/")[1]) == Integer.valueOf(startDay.split("/")[1]))) {
-                    return true;
-                }
+            }
+
+            // ADDS PANEL TO THE GUI
+            for (int i = 0; i < items.size(); i++) {
+                add(items.get(i));
+            }
+
+            revalidate();
+            repaint();
         }
-        return false;
     }
-
-    public long daysBetween(String date1, String date2) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-        LocalDate firstDate = LocalDate.parse(date1, formatter);
-        LocalDate secondDate = LocalDate.parse(date2, formatter);
-        long days = ChronoUnit.DAYS.between(firstDate, secondDate);
-        return days;
-    }
-
-//    public boolean notDeleted(Appointment app, String date, List<Appointment> delapps) {
-//        for (Appointment a : delapps) {
-//            if (date.equalsIgnoreCase(a.getStartDay()) && app.getStartTime() == a.getStartTime() && app.getEndTime() == a.getEndTime()) {
-//                return false;
-//            }
-//        }
-//        return true;
-//    }
-
-//    public void filterItems(List<Appointment> apps, String date, String name) {
-//        if (controller instanceof SecretaryController) { //SECRETARY VIEW
-//            for (int i = 0; i < items.size(); i++) {
-//                remove(items.get(i));
-//            }
-//
-//            items.clear();
-//
-//            for (int i = 0; i < apps.size(); i++) {
-//                System.out.println("Date is " + date);
-//                if (checkDate(apps.get(i).getStartDay(), apps.get(i).getEndDay(), date, apps.get(i).getRepeat())) {
-//                    if (name.equals("All")) //if secretary selects "All" doctors view
-//                    {
-//                        items.add(new AgendaItem(controller, apps.get(i)));
-//                    } else if (apps.get(i).getName().equals(name)) //if secretary selects a specific doctor view
-//                    {
-//                        items.add(new AgendaItem(controller, apps.get(i)));
-//                    }
-//                }
-//            }
-//
-//            // ADDS PANEL TO THE GUI
-//            for (int i = 0; i < items.size(); i++) {
-//                add(items.get(i));
-//            }
-//
-//            revalidate();
-//            repaint();
-//        }
-//    }
 }

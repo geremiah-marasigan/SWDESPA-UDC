@@ -69,47 +69,8 @@ public class AgendaItem extends JPanel {
         setPreferredSize(new Dimension(390, 40));
         setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
     }
-
-    // SECRETARY
-    /*
-    public AgendaItem(ModuleController c, Appointment app) {
-        this();
-        this.controller = c;
-        this.app = app;
-        this.setBackground(new Color(186, 255, 133));
-
-        if (controller instanceof DoctorController) {
-            appLbl.setText("FREE APPOINTMENT SLOT");
-            timeLbl.setText("" + app.getStartTime() + " - " + app.getEndTime());
-            trashBtn.setVisible(true);
-        } else if (controller instanceof ClientController) {
-            if (app.getStartDay().equals(app.getEndDay())) {
-                appLbl.setText(app.getStartDay());
-            } else {
-                appLbl.setText(app.getStartDay() + " - " + app.getEndDay());
-            }
-            timeLbl.setText(app.getStartTime() + " - " + app.getEndTime());
-        } else if (controller instanceof SecretaryController) {
-            if (app.getStartDay().equals(app.getEndDay())) {
-                System.out.println(app.getStartDay());
-                appLbl.setText(app.getStartDay());
-            } else {
-                appLbl.setText(app.getStartDay() + " - " + app.getEndDay());
-            }
-            trashBtn.setVisible(true);
-            timeLbl.setText(app.getStartTime() + " - " + app.getEndTime());
-            if (((SecretaryController) controller).getAppointmentType(app).equals("DOCTOR")) {
-                nameLbl.setText("Dr. " + app.getName());
-            } else {
-                nameLbl.setText(app.getName());
-                this.setBackground(Color.CYAN);
-            }
-        }
-    }
-    // SECRETARY ENDS HERE
-     */
     
-    // DOCTOR
+    // EVERYONE
     public AgendaItem(ModuleController c, Appointment app) {
         this();
         this.controller = c;
@@ -127,7 +88,16 @@ public class AgendaItem extends JPanel {
             }
             timeLbl.setText("" + app.getTime());
         } else if (controller instanceof SecretaryController) {
-            
+            if (app.getTaken().equals("NOT_TAKEN")) {
+                this.setBackground(new Color(186, 255, 133));
+                appLbl.setText("FREE SLOT: " + app.getName());
+                trashBtn.setVisible(true);
+            } else {
+                this.setBackground(new Color(255, 100, 100));
+                appLbl.setText("Dr. " + app.getName() + " w/" + app.getTaken());
+                trashBtn.setVisible(false);
+            }
+            timeLbl.setText("" + app.getTime());
         } else if (controller instanceof ClientController) {
             this.setBackground(new Color(186, 255, 133));
             appLbl.setText("Dr. "+app.getName());
@@ -149,7 +119,6 @@ public class AgendaItem extends JPanel {
         item.setBackground(new Color(186, 184, 183));
         return item;
     }
-    // DOCTOR ENDS HERE
 
     // CLIENT
     public static final AgendaItem createEmptyClient() {
@@ -191,31 +160,5 @@ public class AgendaItem extends JPanel {
             }
             return true;
         }
-    }
-    
-    public boolean checkDate(String startDay, String endDay, String curDay, String repeat) {
-        switch (repeat) {
-            case "None":
-                if (startDay.equalsIgnoreCase(curDay)) {
-                    return true;
-                }
-            case "Daily":
-                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0) {
-                    return true;
-                }
-            case "Monthly":
-                if (daysBetween(startDay, curDay) >= 0 && daysBetween(curDay, endDay) >= 0 && daysBetween(startDay, curDay) % 31 == 0) {
-                    return true;
-                }
-        }
-        return false;
-    }
-    
-    public long daysBetween(String date1, String date2) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-        LocalDate firstDate = LocalDate.parse(date1, formatter);
-        LocalDate secondDate = LocalDate.parse(date2, formatter);
-        long days = ChronoUnit.DAYS.between(firstDate, secondDate);
-        return days;
     }
 }

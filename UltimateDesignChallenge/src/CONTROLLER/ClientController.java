@@ -51,8 +51,8 @@ public class ClientController extends ModuleController {
         updateViews(app.getDate());
     }
     
-    public void edit(String time) {
-        ((ClientView)view).edit(time);
+    public void edit(String time, String name) {
+        ((ClientView)view).edit(time,name);
     }
     
     public List<Appointment> getSlot(String date, int time){

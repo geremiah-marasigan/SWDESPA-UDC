@@ -86,7 +86,7 @@ public class ClientView extends JFrame implements ModuleView {
     private JButton btnAdd, btnCancel, btnClear;
 
     private JPanel pnlEdit;
-    private JLabel oldTimeLbl, newTimeLbl;
+    private JLabel oldTimeLbl, newTimeLbl, oldDoctorLbl;
     private JComboBox newTimeCmb;
     private JButton editBtn;
 
@@ -291,7 +291,7 @@ public class ClientView extends JFrame implements ModuleView {
         eDay.setVisible(false);
         sTime = new JComboBox();
         eTime = new JComboBox();
-        for (int hour = 0; hour < 24; hour++) {
+        for (int hour = 9; hour < 21; hour++) {
             for (int min = 0; min < 60; min += 30) {
                 String hourString = String.valueOf(hour);
                 if (hourString.length() == 1) {
@@ -306,6 +306,7 @@ public class ClientView extends JFrame implements ModuleView {
                 eTime.addItem(time);
             }
         }
+        eTime.addItem("21:00");
         String[] repeatOptions = {"None", "Daily"};
         repeat = new JComboBox(repeatOptions);
         repeat.setSelectedIndex(0);
@@ -411,7 +412,7 @@ public class ClientView extends JFrame implements ModuleView {
         editBtn = new JButton("Edit");
         editBtn.addActionListener(new btnEdit_Action());
         newTimeCmb = new JComboBox();
-        for (int hour = 0; hour < 24; hour++) {
+        for (int hour = 9; hour < 21; hour++) {
             for (int min = 0; min < 60; min += 30) {
                 String hourString = String.valueOf(hour);
                 if (hourString.length() == 1) {
@@ -428,7 +429,9 @@ public class ClientView extends JFrame implements ModuleView {
 
         oldTimeLbl = new JLabel("Old Slot: ");
         newTimeLbl = new JLabel("New Slot: ");
-
+        oldDoctorLbl = new JLabel("Old Doctor: ");
+        
+        oldDoctorLbl.setBounds(155,5,150,25);
         oldTimeLbl.setBounds(5, 5, 150, 25);
         newTimeLbl.setBounds(5, 30, 100, 25);
 
@@ -439,13 +442,16 @@ public class ClientView extends JFrame implements ModuleView {
         pnlEdit.add(btnCancel);
         pnlEdit.add(oldTimeLbl);
         pnlEdit.add(newTimeLbl);
+        pnlEdit.add(oldDoctorLbl);
         pnlEdit.add(newTimeCmb);
     }
 
-    public void edit(String time) {
+    public void edit(String time, String name) {
         pnlEdit.add(btnCancel);
+        pnlEdit.add(doctorLbl);
         pnlEdit.add(doctors);
         oldTimeLbl.setText("Old Time: " + time);
+        oldDoctorLbl.setText("Old Doctor: Dr. " + name);
         pnlEdit.setVisible(true);
         pnlApp.setVisible(false);
     }
@@ -488,6 +494,7 @@ public class ClientView extends JFrame implements ModuleView {
         public void actionPerformed(ActionEvent e) {
             pnlApp.add(btnCancel);
             pnlApp.add(doctors);
+            pnlEdit.add(doctorLbl);
             revalidate();
             repaint();
             pnlApp.setVisible(true);
@@ -516,15 +523,16 @@ public class ClientView extends JFrame implements ModuleView {
             System.out.println(oldTimeLbl.getText().split(" ")[1].replaceAll(":", ""));
             int oldTime = Integer.valueOf(oldTimeLbl.getText().split(" ")[2].replaceAll(":", ""));
             int newTime = Integer.valueOf(((String) newTimeCmb.getSelectedItem()).replaceAll(":", ""));
-            appsToAdd.add(new Appointment(curDoctor, curDate, newTime, user.getLastname()));
             curDoctor = ((String) doctors.getSelectedItem()).split(" ")[1];
+            appsToAdd.add(new Appointment(curDoctor, curDate, newTime, user.getLastname()));
+
             director.setTimeslotBuilder(new AppointmentBuilder(), controller);
             if (director.addApp(appsToAdd)) {
-                ((ClientController) controller).deleteAppointment(new Appointment(curDoctor, curDate, oldTime, user.getLastname()));
+                ((ClientController) controller).deleteAppointment(new Appointment(oldDoctorLbl.getText().split(" ")[3], curDate, oldTime, user.getLastname()));
                 pnlApp.setVisible(false);
                 errorMsg.setVisible(false);
             } else {
-                pnlApp.add(errorMsg);
+                pnlEdit.add(errorMsg);
                 errorMsg.setText("<html>ERROR! Conflicting<br/>Appointment Slots</html>");
                 errorMsg.setVisible(true);
             }

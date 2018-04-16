@@ -137,33 +137,35 @@ public class ScheduleItem extends JPanel {
     // DOCTOR ENDS HERE
 
     // SECRETARY
-    public ScheduleItem(ModuleController c, String time, boolean first, Appointment app, String type) {
+    public ScheduleItem(ModuleController c, String time, List<Appointment> apps) {
         this();
-        System.out.println(type);
+        
         this.controller = c;
-        if (first) {
-            System.out.println("First");
+        for(int i = 0; i < apps.size(); i++){
+                    this.app = apps.get(i);
+                    if (apps.get(0).getTaken().equals("NOT_TAKEN")) {
+                        this.setBackground(new Color(186, 255, 133));
+                        this.name.setText("Dr. " + apps.get(0).getName() + ": FREE SLOT");
+                        
+                        for(int j = 0; j < apps.size(); j++)
+                        {
+                            if(apps.get(j).getDate().equals(apps.get(i).getDate())
+                               && apps.get(j).getTime() == apps.get(i).getTime()
+                               && !(apps.get(j).getName().equals(apps.get(i).getName())))
+                            {
+                                this.name.setText("Dr. " + apps.get(i).getName() +
+                                                  ", Dr. " + apps.get(j).getName() + ": FREE SLOT");
+                            }
+                        }
+                        
+                        this.add(btnDelete); 
 
-            if (type.equals("doctor")) {
-                System.out.println("ENTERED DOCTOR");
-                this.name.setText("Dr. " + app.getName());
-            } else if (type.equals("client")) {
-                System.out.println("ENTERED TAKEN");
-                this.name.setText("Taken");
-            }
-        } else {
-            this.name.setText("");
-        }
-
-        if (type.equals("doctor")) {
-            this.setBackground(new Color(186, 255, 133));
-        } else if (type.equals("client")) {
-            this.setBackground(Color.RED);
-        } else {
-            this.setBackground(Color.white);
-        }
-
-        this.time.setText(time);
+                    } else {
+                        this.setBackground(new Color(255, 100, 100));
+                        this.name.setText("Dr." + apps.get(0).getName() + " : " + apps.get(0).getTaken());
+                    }
+                }
+                this.time.setText(time);    
     }
     // SECRETARY ENDS HERE
 
@@ -183,7 +185,7 @@ public class ScheduleItem extends JPanel {
             if (controller instanceof DoctorController) {
                 ((DoctorController) controller).edit(time.getText());
             } else if (controller instanceof ClientController) {
-                ((ClientController) controller).edit(time.getText());
+                ((ClientController) controller).edit(time.getText(),app.getName());
             }
         }
     }
@@ -195,7 +197,10 @@ public class ScheduleItem extends JPanel {
                 ((DoctorController) controller).deleteAppointment(app);
             } else if (controller instanceof ClientController) {
                 ((ClientController) controller).deleteAppointment(app);
+            } else if (controller instanceof SecretaryController){
+                ((SecretaryController) controller).deleteAppointment(app);
             }
+            
         }
     }
 }
