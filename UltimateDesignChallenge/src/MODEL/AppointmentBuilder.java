@@ -17,27 +17,45 @@ public class AppointmentBuilder extends TimeslotBuilder {
 
     @Override
     public boolean isAvailable(Appointment app) {
-        List<Appointment> free = ((ClientController)controller).getAllFree(app.getDate());
-        if (inTime(app,free))
-            return true;
+        List<Appointment> free = ((ClientController) controller).getAllFree(app.getDate());
+        if (inTime(app, free)) {
+            if (doctorCheck(app)) {
+                return true;
+            }
+        }
         System.out.println("ERROR IN AVAILABLE");
         return false;
     }
-    
-    private boolean inTime(Appointment app,List<Appointment> free){
-        for (Appointment freeSlot: free){
+
+    private boolean inTime(Appointment app, List<Appointment> free) {
+        for (Appointment freeSlot : free) {
             System.out.println(app.getTime() + " COMPARED TO " + freeSlot.getTime());
             System.out.println(app.getName() + " COMPARED TO " + freeSlot.getName());
-            if (app.getTime() == freeSlot.getTime() && app.getName().equals(freeSlot.getName()))
+            if (app.getTime() == freeSlot.getTime() && app.getName().equals(freeSlot.getName())) {
                 return true;
+            }
         }
         System.out.println("ERROR IN TIME");
         return false;
     }
-    
+
+    private boolean doctorCheck(Appointment app) {
+        List<Appointment> check = ((ClientController) controller).getSlot(app.getDate(), app.getTime());
+
+        for (Appointment time : check) {
+            System.out.println(time.getTaken() + time.getName() + time.getDate() + " " + time.getTime());
+            if (!time.getTaken().equals("NOT_TAKEN")) {
+                System.out.println("ERROR IN DOCTOR");
+                return false;
+            }
+        }
+        System.out.println("NO ERROR IN DOCTOR");
+        return true;
+    }
+
     public void addAppSlot(Appointment app) {
         if (controller instanceof ClientController) {
-            System.out.println(app.getTaken() + app.getName() + app.getDate() +" " + app.getTime());
+            System.out.println(app.getTaken() + app.getName() + app.getDate() + " " + app.getTime());
             ((ClientController) controller).addAppointment(app);
         } else if (controller instanceof SecretaryController) {
             //((SecretaryController) controller).addAppointment(app);

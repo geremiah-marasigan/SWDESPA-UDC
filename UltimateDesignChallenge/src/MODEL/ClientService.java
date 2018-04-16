@@ -116,12 +116,41 @@ public class ClientService extends ModuleService {
     public List<Appointment> getAllFilter(String name,String date) {
         List<Appointment> apps = new ArrayList<>();
         Connection connect = connection.getConnection();
-        String query = "SELECT * " + " FROM " + Appointment.TABLE + " WHERE " + Appointment.COL_DATE + " =? AND " + Appointment.COL_TAKEN + " = 'NOT_TAKEN' AND " + Appointment.COL_NAME + " = ?";
+        String query = "SELECT * " + " FROM " + Appointment.TABLE + " WHERE " + Appointment.COL_DATE + " =? AND " + Appointment.COL_NAME + " = ?";
 
         try {
             PreparedStatement statement = connect.prepareStatement(query);
             statement.setString(1, date);
             statement.setString(2, name);
+            ResultSet rs = statement.executeQuery();
+
+            while (rs.next()) {
+                apps.add(toAppointment(rs));
+            }
+
+            rs.close();
+            statement.close();
+            connect.close();
+
+            //    System.out.println("[Appointment] SELECT SUCCESS!");
+        } catch (SQLException e) {
+            e.printStackTrace();
+            //    System.out.println("[Appointment] SELECT FAILED!");
+            return null;
+        }
+
+        return apps;
+    }
+    
+    public List<Appointment> getSlot(String date, int time) {
+        List<Appointment> apps = new ArrayList<>();
+        Connection connect = connection.getConnection();
+        String query = "SELECT * " + " FROM " + Appointment.TABLE + " WHERE " + Appointment.COL_DATE + " =? AND " + Appointment.COL_TIME + " = ?";
+
+        try {
+            PreparedStatement statement = connect.prepareStatement(query);
+            statement.setString(1, date);
+            statement.setInt(2, time);
             ResultSet rs = statement.executeQuery();
 
             while (rs.next()) {

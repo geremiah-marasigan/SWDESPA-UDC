@@ -5,11 +5,8 @@
  */
 package VIEW;
 
-import CONTROLLER.ClientController;
-import CONTROLLER.DoctorController;
-import CONTROLLER.ModuleController;
-import MODEL.Appointment;
-import MODEL.User;
+import CONTROLLER.*;
+import MODEL.*;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
@@ -58,7 +55,6 @@ public class ScheduleItem extends JPanel {
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnDelete.png")));
             btnDelete.setIcon(new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)));
-            btnDelete.setToolTipText("Delete");
         } catch (IOException e) {
             System.out.println("FILE NOT FOUND");
         }
@@ -67,7 +63,6 @@ public class ScheduleItem extends JPanel {
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnEdit.png")));
             btnEdit.setIcon(new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)));
-            btnEdit.setToolTipText("Edit");
         } catch (IOException e) {
             System.out.println("FILE NOT FOUND");
         }
@@ -80,17 +75,40 @@ public class ScheduleItem extends JPanel {
     }
 
     // CLIENT
-    public ScheduleItem(ModuleController c, String time, Appointment app, User user) {
+    public ScheduleItem(ModuleController c, String time, List<Appointment> apps, User user) {
         this();
         this.controller = c;
-        this.app = app;
         this.setBackground(Color.white);
-
-        if (app.getTaken().equals(user.getLastname())) {
-            this.setBackground(new Color(186, 255, 133));
-            this.name.setText("Dr. " + app.getName());
-            this.add(btnDelete);
-            this.add(btnEdit);
+        if (apps.size() == 1) {
+            this.app = apps.get(0);
+            if (apps.get(0).getTaken().equals("NOT_TAKEN")) {
+                this.setBackground(new Color(186, 255, 133));
+                this.name.setText("Dr. " + apps.get(0).getName());
+            } else {
+                this.setBackground(new Color(186, 255, 133).darker());
+                this.name.setText("Taken");
+                if (apps.get(0).getTaken().equals(user.getLastname())) {
+                    this.add(btnDelete);
+                    this.add(btnEdit);
+                }
+            }
+        } else if (apps.size() > 1) {
+            for (int i = 0; i < apps.size(); i++) {
+                if (apps.get(i).getTaken().equals("NOT_TAKEN")) {
+                    this.setBackground(new Color(186, 255, 133));
+                    String temp = this.name.getText() + " Dr. " + apps.get(i).getName();
+                    this.name.setText(temp);
+                } else {
+                    this.setBackground(new Color(186, 255, 133).darker());
+                    if (apps.get(i).getTaken().equals(user.getLastname())) {
+                        this.app = apps.get(i);
+                        this.name.setText("Taken");
+                        this.add(btnDelete);
+                        this.add(btnEdit);
+                    }
+                    break;
+                }
+            }
         }
 
         this.time.setText(time);
@@ -98,42 +116,22 @@ public class ScheduleItem extends JPanel {
     // CLIENT ENDS HERE
 
     // DOCTOR
-    public ScheduleItem(ModuleController c, String time, List<Appointment> apps, User user) {
+    public ScheduleItem(ModuleController c, String time, Appointment app) {
         this();
         this.controller = c;
         this.setBackground(Color.white);
+        this.app = app;
+        if (app.getTaken().equals("NOT_TAKEN")) {
+            this.setBackground(new Color(186, 255, 133));
+            this.name.setText("FREE SLOT");
+            this.add(btnDelete);
+            this.add(btnEdit);
 
-        if (apps.size() == 1 && apps.get(0).getName().equals(user.getLastname())) {
-            this.app = apps.get(0);
-            if (apps.get(0).getTaken().equals("NOT_TAKEN")) {
-                this.setBackground(new Color(186, 255, 133));
-                this.name.setText("FREE SLOT");
-                this.add(btnDelete);
-                this.add(btnEdit);
-
-            } else {
-                this.setBackground(new Color(186, 255, 133).darker());
-                this.name.setText("APPOINTMENT W/ " + apps.get(0).getTaken());
-            }
-        } else if (apps.size() == 1 && !apps.get(0).getName().equals(user.getLastname())) {
-            this.setBackground(Color.LIGHT_GRAY);
-            this.name.setText("SLOT TAKEN BY " + apps.get(0).getName());
-        } else if (apps.size() > 1) {
-            this.setBackground(new Color(151, 207, 83));
-            for (int i = 0; i < apps.size(); i++) {
-                if (apps.get(i).getName().equals(user.getLastname())) {
-                    this.app = apps.get(i);
-                    if (apps.get(i).getTaken().equals("NOT_TAKEN")) {
-                        this.name.setText("FREE SLOT");
-                        this.add(btnDelete);
-                        this.add(btnEdit);
-                    } else {
-                        this.setBackground(new Color(151, 207, 83).darker());
-                        this.name.setText("APPOINTMENT W/ " + apps.get(i).getTaken());
-                    }
-                }
-            }
+        } else {
+            this.setBackground(new Color(186, 255, 133).darker());
+            this.name.setText("APPOINTMENT W/ " + app.getTaken());
         }
+
         this.time.setText(time);
     }
     // DOCTOR ENDS HERE
@@ -187,22 +185,12 @@ public class ScheduleItem extends JPanel {
             } else if (controller instanceof ClientController) {
                 ((ClientController) controller).edit(time.getText());
             }
-
         }
     }
 
     class btnDelete_Action implements ActionListener {
-
         @Override
         public void actionPerformed(ActionEvent e) {
-//            int sTime = Integer.valueOf(time.getText().replace(":", ""));
-//            int eTime = sTime + 30;
-//            if (eTime % 100 >= 60) {
-//                eTime = ((eTime / 100) + 1) * 100;
-//            }
-//            if (eTime / 100 >= 24) {
-//                eTime = 0;
-//            }
             if (controller instanceof DoctorController) {
                 ((DoctorController) controller).deleteAppointment(app);
             } else if (controller instanceof ClientController) {

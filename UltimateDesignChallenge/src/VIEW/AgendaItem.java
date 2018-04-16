@@ -35,36 +35,36 @@ import javax.swing.JPanel;
  * @author ianona
  */
 public class AgendaItem extends JPanel {
-
+    
     private Appointment app;
     private ModuleController controller;
-
+    
     private JLabel appLbl, timeLbl, nameLbl;
     private JButton trashBtn;
-
+    
     public AgendaItem() {
         appLbl = new JLabel();
         timeLbl = new JLabel();
         nameLbl = new JLabel();
         trashBtn = new JButton();
         trashBtn.addActionListener(new trashBtn_Action());
-
+        
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnTrash.png")));
             trashBtn.setIcon(new ImageIcon(icon.getImage().getScaledInstance(20, 20, Image.SCALE_DEFAULT)));
         } catch (IOException e) {
             System.out.println("FILE NOT FOUND");
         }
-
+        
         appLbl.setPreferredSize(new Dimension(180, 40));
         timeLbl.setPreferredSize(new Dimension(80, 40));
-
+        
         add(appLbl);
         add(nameLbl);
         add(timeLbl);
         add(trashBtn);
         trashBtn.setVisible(false);
-
+        
         setBorder(BorderFactory.createLineBorder(Color.white, 1));
         setPreferredSize(new Dimension(390, 40));
         setLayout(new FlowLayout(FlowLayout.LEFT, 10, 0));
@@ -108,12 +108,13 @@ public class AgendaItem extends JPanel {
     }
     // SECRETARY ENDS HERE
      */
+    
     // DOCTOR
     public AgendaItem(ModuleController c, Appointment app) {
         this();
         this.controller = c;
         this.app = app;
-        timeLbl.setText("" + app.getTime());
+        
         if (controller instanceof DoctorController) {
             if (app.getTaken().equals("NOT_TAKEN")) {
                 this.setBackground(new Color(186, 255, 133));
@@ -124,23 +125,24 @@ public class AgendaItem extends JPanel {
                 appLbl.setText("APPOINTMENT W/ " + app.getTaken());
                 trashBtn.setVisible(false);
             }
-
+            timeLbl.setText("" + app.getTime());
         } else if (controller instanceof SecretaryController) {
-
+            
         } else if (controller instanceof ClientController) {
             this.setBackground(new Color(186, 255, 133));
             appLbl.setText("Dr. "+app.getName());
             trashBtn.setVisible(false);
+            timeLbl.setText("" + app.getTime());
         }
     }
-
+    
     public static final AgendaItem createEmptyDoctor() {
         AgendaItem item = new AgendaItem();
         item.appLbl.setText("NOTHING FOR TODAY");
         item.setBackground(new Color(186, 184, 183));
         return item;
     }
-
+    
     public static final AgendaItem createTitle(String text) {
         AgendaItem item = new AgendaItem();
         item.appLbl.setText(text);
@@ -150,13 +152,6 @@ public class AgendaItem extends JPanel {
     // DOCTOR ENDS HERE
 
     // CLIENT
-    public AgendaItem(ModuleController c, Appointment app, String date) {
-        this();
-        this.controller = c;
-        this.app = app;
-        this.setBackground(new Color(186, 255, 133));
-    }
-
     public static final AgendaItem createEmptyClient() {
         AgendaItem item = new AgendaItem();
         item.appLbl.setText("NO APPOINTMENTS TODAY");
@@ -171,24 +166,33 @@ public class AgendaItem extends JPanel {
         @Override
         public void actionPerformed(ActionEvent e) {
             if (controller instanceof DoctorController) {
-                ((DoctorController) controller).deleteDay(app);
+                if (okayToDelete(app))
+                    ((DoctorController) controller).deleteDay(app);
+                else
+                    JOptionPane.showMessageDialog(((JButton)e.getSource()).getParent(), "Error! Slot taken, cannot delete entire interval.");
             } else if (controller instanceof ClientController) {
-                
+                /*
+                if (app.getRepeat() == "None") {
+                    ((ClientController) controller).deleteAppointment(app);
+                } else {
+                    ((ClientController) controller).deleteRepeat(app, ((ClientController) controller).getCurDate());
+                }
+                 */
             } else if (controller instanceof SecretaryController) {
                 //((SecretaryController) controller).deleteAppointment(app);
             }
         }
-
-        public long daysBetween(String date1, String date2) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-            LocalDate firstDate = LocalDate.parse(date1, formatter);
-            LocalDate secondDate = LocalDate.parse(date2, formatter);
-            long days = ChronoUnit.DAYS.between(firstDate, secondDate);
-            return days;
+        
+        public boolean okayToDelete(Appointment app) {
+            List<Appointment> taken = ((DoctorController) controller).getSlots(app.getDate(), ((DoctorController)controller).getUser());
+            for (int i = 0; i < taken.size(); i++) {
+                if (!taken.get(i).getTaken().equals("NOT_TAKEN"))
+                    return false;
+            }
+            return true;
         }
-
     }
-
+    
     public boolean checkDate(String startDay, String endDay, String curDay, String repeat) {
         switch (repeat) {
             case "None":
@@ -206,7 +210,7 @@ public class AgendaItem extends JPanel {
         }
         return false;
     }
-
+    
     public long daysBetween(String date1, String date2) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         LocalDate firstDate = LocalDate.parse(date1, formatter);

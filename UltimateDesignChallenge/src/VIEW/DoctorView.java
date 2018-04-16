@@ -82,7 +82,7 @@ public class DoctorView extends JFrame implements ModuleView {
     /**
      * * Additional Tools Components **
      */
-    private JButton btnApp;
+    private JButton btnApp, btnFilter;
     private JPanel pnlApp;
     private JLabel sDayLbl, eDayLbl, sTimeLbl, eTimeLbl, repeatLbl, errorMsg;
     private JTextField sDay, eDay;
@@ -143,6 +143,7 @@ public class DoctorView extends JFrame implements ModuleView {
         mainPane.add(agendaLbl);
 
         this.sv = new ScheduleView(controller);
+        sv.setUser(user);
         scheduleScroll = new JScrollPane(sv);
         scheduleScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scheduleScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -175,7 +176,7 @@ public class DoctorView extends JFrame implements ModuleView {
 
     @Override
     public void setScheduleItems(List<Appointment> apps) {
-        sv.setItems(apps, user);
+        sv.setItems(apps);
     }
 
     @Override
@@ -190,7 +191,13 @@ public class DoctorView extends JFrame implements ModuleView {
     @Override
     public void updateViews(List<Appointment> apps) {
         av.setItems(apps);
-        sv.setItems(apps, user);
+        sv.setItems(apps);
+        if (wv != null) {
+            wv.update(getWeekInfo());
+        }
+        if (wav != null) {
+            wav.update(getWeekInfo());
+        }
     }
 
     @Override
@@ -277,9 +284,21 @@ public class DoctorView extends JFrame implements ModuleView {
         weeklyAgendaBtn.setBounds(110, 380, 50, 50);
         weeklyAgendaBtn.addActionListener(new btnWeekA_Action());
 
+        btnFilter = new JButton();
+        btnFilter.setBounds(160, 380, 50, 50);
+        btnFilter.addActionListener(new btnFilter_Action());
+
         mainPane.add(weeklyAgendaBtn);
         mainPane.add(btnApp);
         mainPane.add(weeklySchedBtn);
+        mainPane.add(btnFilter);
+
+        try {
+            ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnFilter.png")));
+            btnFilter.setIcon(new ImageIcon(icon.getImage().getScaledInstance(50, 50, Image.SCALE_DEFAULT)));
+        } catch (IOException e) {
+            System.out.println("FILE NOT FOUND");
+        }
 
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnWeeklyAgenda.png")));
@@ -314,6 +333,7 @@ public class DoctorView extends JFrame implements ModuleView {
         btnCancel.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
                 pnlApp.setVisible(false);
+                pnlEdit.setVisible(false);
             }
         });
         sDay = new JTextField(10);
@@ -321,7 +341,7 @@ public class DoctorView extends JFrame implements ModuleView {
         eDay.setVisible(false);
         sTime = new JComboBox();
         eTime = new JComboBox();
-        for (int hour = 0; hour < 24; hour++) {
+        for (int hour = 9; hour < 21; hour++) {
             for (int min = 0; min < 60; min += 30) {
                 String hourString = String.valueOf(hour);
                 if (hourString.length() == 1) {
@@ -336,6 +356,7 @@ public class DoctorView extends JFrame implements ModuleView {
                 eTime.addItem(time);
             }
         }
+        eTime.addItem("21:00");
         String[] repeatOptions = {"None", "Daily"};
         repeat = new JComboBox(repeatOptions);
         repeat.setSelectedIndex(0);
@@ -400,7 +421,7 @@ public class DoctorView extends JFrame implements ModuleView {
         editBtn = new JButton("Edit");
         editBtn.addActionListener(new btnEdit_Action());
         newTimeCmb = new JComboBox();
-        for (int hour = 0; hour < 24; hour++) {
+        for (int hour = 9; hour < 21; hour++) {
             for (int min = 0; min < 60; min += 30) {
                 String hourString = String.valueOf(hour);
                 if (hourString.length() == 1) {
@@ -484,7 +505,7 @@ public class DoctorView extends JFrame implements ModuleView {
             schedLbl.setText("Schedule for " + curDate);
 
             //((DoctorController)controller).updateViews();
-            ((DoctorController) controller).updateViews(user, curDate);
+            ((DoctorController) controller).updateViews(curDate, user);
 
             sDay.setText(curDate);
             eDay.setText(curDate);
@@ -569,7 +590,7 @@ public class DoctorView extends JFrame implements ModuleView {
             for (int i = 0; i < daysBetween(startD, endD) + 1; i++) {
                 int time = startT;
                 while (time != endT) {
-                    appsToAdd.add(new Appointment(user.getLastname(),date,time,"NOT_TAKEN"));
+                    appsToAdd.add(new Appointment(user.getLastname(), date, time, "NOT_TAKEN"));
                     time += 30;
                     if (time % 100 >= 60) {
                         time = ((time / 100) + 1) * 100;
@@ -586,17 +607,22 @@ public class DoctorView extends JFrame implements ModuleView {
                     Logger.getLogger(DoctorView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
-            director.setTimeslotBuilder(new AppointmentSlotBuilder(), controller);
-            if (director.addAppSlot(appsToAdd)) {
-                pnlApp.setVisible(false);
-                errorMsg.setVisible(false);
-            } else {
+            if (endT <= startT) {
                 pnlApp.add(errorMsg);
-                errorMsg.setText("<html>ERROR! Conflicting<br/>Appointment Slots</html>");
+                errorMsg.setText("<html>ERROR! Invalid<br/>Appointment Slots</html>");
                 errorMsg.setVisible(true);
+            } else {
+                director.setTimeslotBuilder(new AppointmentSlotBuilder(), controller);
+                if (director.addAppSlot(appsToAdd)) {
+                    pnlApp.setVisible(false);
+                    errorMsg.setVisible(false);
+                } else {
+                    pnlApp.add(errorMsg);
+                    errorMsg.setText("<html>ERROR! Conflicting<br/>Appointment Slots</html>");
+                    errorMsg.setVisible(true);
+                }
             }
-             
+
         }
     }
 
@@ -612,29 +638,14 @@ public class DoctorView extends JFrame implements ModuleView {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            /*
             int oldTime = Integer.valueOf(oldTimeLbl.getText().split(" ")[2].replace(":", ""));
-            int oldEndTime = oldTime + 30;
-            if (oldEndTime % 100 >= 60) {
-                oldEndTime = ((oldEndTime / 100) + 1) * 100;
-            }
-            if (oldEndTime / 100 >= 24) {
-                oldEndTime = 0;
-            }
             int newTime = Integer.valueOf(newTimeCmb.getSelectedItem().toString().replace(":", ""));
-            int newEndTime = newTime + 30;
-            if (newEndTime % 100 >= 60) {
-                newEndTime = ((newEndTime / 100) + 1) * 100;
-            }
-            if (newEndTime / 100 >= 24) {
-                newEndTime = 0;
-            }
 
-            String day = curDate;
-            System.out.println("CHANGING " + oldTime + " TO " + newTime + " DAY: " + day);
-            ((DoctorController) controller).delete(new Appointment(user.getLastname(), day, day, "None", oldTime, oldEndTime));
+            List<Appointment> appsToAdd = new ArrayList<>();
+            appsToAdd.add(new Appointment(user.getLastname(), curDate, newTime, "NOT_TAKEN"));
             director.setTimeslotBuilder(new AppointmentSlotBuilder(), controller);
-            if (director.addAppSlot(user.getLastname(), day, day, "None", newTime, newEndTime)) {
+            if (director.addAppSlot(appsToAdd)) {
+                ((DoctorController) controller).deleteAppointment(new Appointment(user.getLastname(), curDate, oldTime, "NOT_TAKEN"));
                 pnlEdit.setVisible(false);
                 errorMsg.setVisible(false);
             } else {
@@ -642,7 +653,6 @@ public class DoctorView extends JFrame implements ModuleView {
                 errorMsg.setText("<html>ERROR! Conflicting<br/>Appointment Slots</html>");
                 errorMsg.setVisible(true);
             }
-             */
         }
     }
 
@@ -666,7 +676,7 @@ public class DoctorView extends JFrame implements ModuleView {
 
         @Override
         public void actionPerformed(ActionEvent tc) {
-            ((DoctorController) controller).updateViews(user, curDate);
+            ((DoctorController) controller).updateViews(curDate, user);
         }
     }
 
@@ -683,6 +693,13 @@ public class DoctorView extends JFrame implements ModuleView {
         @Override
         public void actionPerformed(ActionEvent e) {
             wv = new WeeklyView(controller, getWeekInfo(), user);
+            wv.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    wv.dispose();
+                    wv = null;
+                }
+            });
         }
     }
 
@@ -691,6 +708,13 @@ public class DoctorView extends JFrame implements ModuleView {
         @Override
         public void actionPerformed(ActionEvent e) {
             wav = new WeeklyAgendaView(controller, getWeekInfo(), user);
+            wav.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+                    wav.dispose();
+                    wav = null;
+                }
+            });
         }
     }
 
@@ -725,6 +749,14 @@ public class DoctorView extends JFrame implements ModuleView {
         weekInfo.add(sdf.format(cal.getTime()).split(" "));
 
         return weekInfo;
+    }
+
+    class btnFilter_Action implements ActionListener {
+
+        @Override
+        public void actionPerformed(ActionEvent e) {
+            
+        }
     }
 
 }

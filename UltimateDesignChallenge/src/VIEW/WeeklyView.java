@@ -19,34 +19,36 @@ import javax.swing.JScrollPane;
  * @author ianona
  */
 public class WeeklyView extends JFrame {
+
     private ModuleController controller;
     private Container mainPane;
     private ScheduleView mView, tView, wView, hView, fView, stView, suView;
     private JScrollPane mScroll, tScroll, wScroll, hScroll, fScroll, stScroll, suScroll;
     private List<String[]> weekInfo;
     private User user;
-    
-    public WeeklyView (ModuleController c, List<String[]> weekInfo, User user) {
+
+    public WeeklyView(ModuleController c, List<String[]> weekInfo, User user) {
         this.controller = c;
         this.weekInfo = weekInfo;
         this.user = user;
         this.setTitle("Weekly View");
         this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
-        this.setSize(1260,650);
+        this.setSize(1260, 650);
         
+
         initialize();
-        
+
         this.setResizable(false);
         this.setVisible(true);
         this.revalidate();
         this.repaint();
     }
-    
+
     public void initialize() {
         mainPane = this.getContentPane();
         mainPane.setLayout(null);
         mainPane.setBackground(Color.white);
-        
+
         suView = new ScheduleView(controller);
         mView = new ScheduleView(controller);
         tView = new ScheduleView(controller);
@@ -54,7 +56,14 @@ public class WeeklyView extends JFrame {
         hView = new ScheduleView(controller);
         fView = new ScheduleView(controller);
         stView = new ScheduleView(controller);
-        
+        suView.setUser(user);
+        mView.setUser(user);
+        tView.setUser(user);
+        wView.setUser(user);
+        hView.setUser(user);
+        fView.setUser(user);
+        stView.setUser(user);
+
         suScroll = new JScrollPane(suView);
         mScroll = new JScrollPane(mView);
         tScroll = new JScrollPane(tView);
@@ -62,15 +71,15 @@ public class WeeklyView extends JFrame {
         hScroll = new JScrollPane(hView);
         fScroll = new JScrollPane(fView);
         stScroll = new JScrollPane(stView);
-        
-        suScroll.setBounds(0,0,180,630);
-        mScroll.setBounds(180,0,180,630);
-        tScroll.setBounds(360,0,180,630);
-        wScroll.setBounds(540,0,180,630);
-        hScroll.setBounds(720,0,180,630);
-        fScroll.setBounds(900,0,180,630);
-        stScroll.setBounds(1080,0,180,630);
-        
+
+        suScroll.setBounds(0, 0, 180, 630);
+        mScroll.setBounds(180, 0, 180, 630);
+        tScroll.setBounds(360, 0, 180, 630);
+        wScroll.setBounds(540, 0, 180, 630);
+        hScroll.setBounds(720, 0, 180, 630);
+        fScroll.setBounds(900, 0, 180, 630);
+        stScroll.setBounds(1080, 0, 180, 630);
+
         add(suScroll);
         add(mScroll);
         add(tScroll);
@@ -78,9 +87,9 @@ public class WeeklyView extends JFrame {
         add(hScroll);
         add(fScroll);
         add(stScroll);
-        
+
         update(weekInfo);
-        
+
         suScroll.getVerticalScrollBar().setUnitIncrement(10);
         mScroll.getVerticalScrollBar().setUnitIncrement(10);
         tScroll.getVerticalScrollBar().setUnitIncrement(10);
@@ -89,23 +98,23 @@ public class WeeklyView extends JFrame {
         fScroll.getVerticalScrollBar().setUnitIncrement(10);
         stScroll.getVerticalScrollBar().setUnitIncrement(10);
     }
-    
-    public void update (List<String[]> weekInfo) {
+
+    public void update(List<String[]> weekInfo) {
         this.weekInfo = weekInfo;
-        suView.setItems(((DoctorController)controller).getSlots(weekInfo.get(0)[0] + "/"+ weekInfo.get(0)[1] +"/"+ weekInfo.get(0)[2]),user);
-        suScroll.setBorder(BorderFactory.createTitledBorder("Sun: "+ weekInfo.get(0)[0] + "/"+ weekInfo.get(0)[1] +"/"+ weekInfo.get(0)[2]));
-        mView.setItems(((DoctorController)controller).getSlots(weekInfo.get(1)[0] + "/"+ weekInfo.get(1)[1] +"/"+ weekInfo.get(1)[2]),user);
-        mScroll.setBorder(BorderFactory.createTitledBorder("Mon: "+ weekInfo.get(1)[0] + "/"+ weekInfo.get(1)[1] +"/"+ weekInfo.get(1)[2]));
-        tView.setItems(((DoctorController)controller).getSlots(weekInfo.get(2)[0] + "/"+ weekInfo.get(2)[1] +"/"+ weekInfo.get(2)[2]),user);
-        tScroll.setBorder(BorderFactory.createTitledBorder("Tue: "+ weekInfo.get(2)[0] + "/"+ weekInfo.get(2)[1] +"/"+ weekInfo.get(2)[2]));
-        wView.setItems(((DoctorController)controller).getSlots(weekInfo.get(3)[0] + "/"+ weekInfo.get(3)[1] +"/"+ weekInfo.get(3)[2]),user);
-        wScroll.setBorder(BorderFactory.createTitledBorder("Wed: "+ weekInfo.get(3)[0] + "/"+ weekInfo.get(3)[1] +"/"+ weekInfo.get(3)[2]));
-        hView.setItems(((DoctorController)controller).getSlots(weekInfo.get(4)[0] + "/"+ weekInfo.get(4)[1] +"/"+ weekInfo.get(4)[2]),user);
-        hScroll.setBorder(BorderFactory.createTitledBorder("Thu: "+ weekInfo.get(4)[0] + "/"+ weekInfo.get(4)[1] +"/"+ weekInfo.get(4)[2]));
-        fView.setItems(((DoctorController)controller).getSlots(weekInfo.get(5)[0] + "/"+ weekInfo.get(5)[1] +"/"+ weekInfo.get(5)[2]),user);
-        fScroll.setBorder(BorderFactory.createTitledBorder("Fri: "+ weekInfo.get(5)[0] + "/"+ weekInfo.get(5)[1] +"/"+ weekInfo.get(5)[2]));
-        stView.setItems(((DoctorController)controller).getSlots(weekInfo.get(6)[0] + "/"+ weekInfo.get(6)[1] +"/"+ weekInfo.get(6)[2]),user);
-        stScroll.setBorder(BorderFactory.createTitledBorder("Sat: "+ weekInfo.get(6)[0] + "/"+ weekInfo.get(6)[1] +"/"+ weekInfo.get(6)[2]));
+        suView.setItems(((DoctorController) controller).getSlots(weekInfo.get(0)[0] + "/" + weekInfo.get(0)[1] + "/" + weekInfo.get(0)[2], user));
+        suScroll.setBorder(BorderFactory.createTitledBorder("Sun: " + weekInfo.get(0)[0] + "/" + weekInfo.get(0)[1] + "/" + weekInfo.get(0)[2]));
+        mView.setItems(((DoctorController) controller).getSlots(weekInfo.get(1)[0] + "/" + weekInfo.get(1)[1] + "/" + weekInfo.get(1)[2], user));
+        mScroll.setBorder(BorderFactory.createTitledBorder("Mon: " + weekInfo.get(1)[0] + "/" + weekInfo.get(1)[1] + "/" + weekInfo.get(1)[2]));
+        tView.setItems(((DoctorController) controller).getSlots(weekInfo.get(2)[0] + "/" + weekInfo.get(2)[1] + "/" + weekInfo.get(2)[2], user));
+        tScroll.setBorder(BorderFactory.createTitledBorder("Tue: " + weekInfo.get(2)[0] + "/" + weekInfo.get(2)[1] + "/" + weekInfo.get(2)[2]));
+        wView.setItems(((DoctorController) controller).getSlots(weekInfo.get(3)[0] + "/" + weekInfo.get(3)[1] + "/" + weekInfo.get(3)[2], user));
+        wScroll.setBorder(BorderFactory.createTitledBorder("Wed: " + weekInfo.get(3)[0] + "/" + weekInfo.get(3)[1] + "/" + weekInfo.get(3)[2]));
+        hView.setItems(((DoctorController) controller).getSlots(weekInfo.get(4)[0] + "/" + weekInfo.get(4)[1] + "/" + weekInfo.get(4)[2], user));
+        hScroll.setBorder(BorderFactory.createTitledBorder("Thu: " + weekInfo.get(4)[0] + "/" + weekInfo.get(4)[1] + "/" + weekInfo.get(4)[2]));
+        fView.setItems(((DoctorController) controller).getSlots(weekInfo.get(5)[0] + "/" + weekInfo.get(5)[1] + "/" + weekInfo.get(5)[2], user));
+        fScroll.setBorder(BorderFactory.createTitledBorder("Fri: " + weekInfo.get(5)[0] + "/" + weekInfo.get(5)[1] + "/" + weekInfo.get(5)[2]));
+        stView.setItems(((DoctorController) controller).getSlots(weekInfo.get(6)[0] + "/" + weekInfo.get(6)[1] + "/" + weekInfo.get(6)[2], user));
+        stScroll.setBorder(BorderFactory.createTitledBorder("Sat: " + weekInfo.get(6)[0] + "/" + weekInfo.get(6)[1] + "/" + weekInfo.get(6)[2]));
 
         revalidate();
         repaint();

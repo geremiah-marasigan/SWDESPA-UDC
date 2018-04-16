@@ -5,24 +5,11 @@
  */
 package VIEW;
 
-import CONTROLLER.DoctorController;
 import CONTROLLER.ModuleController;
-import MODEL.Appointment;
 import MODEL.User;
 import java.awt.Color;
 import java.awt.Container;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JScrollPane;
 
@@ -67,10 +54,12 @@ public class WeeklyAgendaView extends JFrame{
         aScroll.setBounds(10,10,390,500);
         
         add(aScroll);
-        
-        curIndex = 0;
-        aView.setWeeklyItems(weekInfo);
+        update(weekInfo);
         
         aScroll.getVerticalScrollBar().setUnitIncrement(10);
+    }
+    
+    public void update(List<String[]> weeklyInfo) {
+        aView.setWeeklyItems(weekInfo);
     }
 }

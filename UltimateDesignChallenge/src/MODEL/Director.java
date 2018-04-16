@@ -38,7 +38,6 @@ public class Director {
         return true;
     }
     
-    
     public boolean addApp(List<Appointment> apps) {
         for (Appointment app:apps) {
             if (!builder.isAvailable(app))
@@ -51,5 +50,4 @@ public class Director {
         }
         return true;
     }
-    
 }

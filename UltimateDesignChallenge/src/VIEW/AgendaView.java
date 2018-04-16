@@ -55,9 +55,7 @@ public class AgendaView extends JPanel {
         // DOCTOR (FILTER BY NAME)
         if (controller instanceof DoctorController) {
             for (Appointment app : apps) {
-                if (app.getName().equals(user.getLastname())) {
-                    items.add(new AgendaItem(controller, app));
-                }
+                items.add(new AgendaItem(controller, app));
             }
         } // SECRETARY (CAN SEE EVERYONE)
         else if (controller instanceof SecretaryController) {
@@ -72,29 +70,9 @@ public class AgendaView extends JPanel {
         } // CLIENT (CAN SEE ALL HIS/HER APPOINTMENTS)
         else if (controller instanceof ClientController) {
             for(Appointment app :apps){
-                if (app.getTaken().equals("NOT_TAKEN"))
+                if (app.getTaken().equals(user.getLastname()))
                     items.add(new AgendaItem(controller, app));
             }
-            /*
-            List<User> tempUsers = ((ClientController) controller).getAllUsers();
-            List<Appointment> delete = ((ClientController) controller).getAllDeleted();
-            for (Appointment app : apps) {
-                skip = false;
-                for (User user : tempUsers) {
-                    if (app.getName().equals(this.user.getLastname()) && checkDate(app.getStartDay(), app.getEndDay(), date, app.getRepeat())) {
-                        for (Appointment deleted : delete) {
-                            if (deleted.getStartTime() == app.getStartTime() && deleted.getEndTime() == app.getEndTime() && checkDate(deleted.getStartDay(), deleted.getEndDay(), date, deleted.getRepeat())) {
-                                skip = true;
-                            }
-                        }
-                        if (!skip) {
-                            items.add(new AgendaItem(controller, app, date));
-                            break;
-                        }
-                    }
-                }
-            }
-             */
         }
 
         // ADDS PANELS TO THE GUI
@@ -133,19 +111,17 @@ public class AgendaView extends JPanel {
                 String startDateString = info[0] + "/" + info[1] + "/" + info[2];
                 DateFormat df = new SimpleDateFormat("MM/dd/yyyy");
                 Date startDate;
-                
+
                 try {
                     startDate = df.parse(startDateString);
                     items.add(AgendaItem.createTitle(simpleDateformat.format(startDate) + ": " + info[0] + "/" + info[1] + "/" + info[2]));
                 } catch (ParseException ex) {
                     Logger.getLogger(WeeklyAgendaView.class.getName()).log(Level.SEVERE, null, ex);
                 }
-                
-                List<Appointment> apps = ((DoctorController) controller).getSlots(info[0] + "/" + info[1] + "/" + info[2]);
+
+                List<Appointment> apps = ((DoctorController) controller).getSlots(info[0] + "/" + info[1] + "/" + info[2], user);
                 for (Appointment app : apps) {
-                    if (app.getName().equals(user.getLastname())) {
-                        items.add(new AgendaItem(controller, app));
-                    }
+                    items.add(new AgendaItem(controller, app));
                 }
             }
 
@@ -190,27 +166,43 @@ public class AgendaView extends JPanel {
         return days;
     }
 
-    
-    public void filterItems(List<Appointment> apps, String date, String name) {
-        if (controller instanceof SecretaryController) { //SECRETARY VIEW
-            for (int i = 0; i < items.size(); i++) {
-                remove(items.get(i));
-            }
+//    public boolean notDeleted(Appointment app, String date, List<Appointment> delapps) {
+//        for (Appointment a : delapps) {
+//            if (date.equalsIgnoreCase(a.getStartDay()) && app.getStartTime() == a.getStartTime() && app.getEndTime() == a.getEndTime()) {
+//                return false;
+//            }
+//        }
+//        return true;
+//    }
 
-            items.clear();
-
-            for (int i = 0; i < apps.size(); i++) {
-                System.out.println("Date is " + date);
-                
-            }
-
-            // ADDS PANEL TO THE GUI
-            for (int i = 0; i < items.size(); i++) {
-                add(items.get(i));
-            }
-
-            revalidate();
-            repaint();
-        }
-    }
+//    public void filterItems(List<Appointment> apps, String date, String name) {
+//        if (controller instanceof SecretaryController) { //SECRETARY VIEW
+//            for (int i = 0; i < items.size(); i++) {
+//                remove(items.get(i));
+//            }
+//
+//            items.clear();
+//
+//            for (int i = 0; i < apps.size(); i++) {
+//                System.out.println("Date is " + date);
+//                if (checkDate(apps.get(i).getStartDay(), apps.get(i).getEndDay(), date, apps.get(i).getRepeat())) {
+//                    if (name.equals("All")) //if secretary selects "All" doctors view
+//                    {
+//                        items.add(new AgendaItem(controller, apps.get(i)));
+//                    } else if (apps.get(i).getName().equals(name)) //if secretary selects a specific doctor view
+//                    {
+//                        items.add(new AgendaItem(controller, apps.get(i)));
+//                    }
+//                }
+//            }
+//
+//            // ADDS PANEL TO THE GUI
+//            for (int i = 0; i < items.size(); i++) {
+//                add(items.get(i));
+//            }
+//
+//            revalidate();
+//            repaint();
+//        }
+//    }
 }

@@ -72,7 +72,7 @@ public abstract class ModuleService {
     public List<Appointment> getAllAppointments() {
 	List <Appointment> apps = new ArrayList <> ();
 	Connection connect = connection.getConnection();
-	String query = 	"SELECT * " + " FROM " + Appointment.TABLE;
+	String query = 	"SELECT * " + " FROM " + Appointment.TABLE  +" ORDER BY " + Appointment.COL_DATE +", "+Appointment.COL_TIME;
 
         try {
             PreparedStatement statement = connect.prepareStatement(query);
@@ -104,6 +104,35 @@ public abstract class ModuleService {
         try {
             PreparedStatement statement = connect.prepareStatement(query);
             statement.setString(1, date);
+            ResultSet rs = statement.executeQuery();
+			
+            while(rs.next()) {
+		apps.add(toAppointment(rs));
+            }
+			
+            rs.close();
+            statement.close();
+            connect.close();
+	
+        //    System.out.println("[Appointment] SELECT SUCCESS!");
+	} catch (SQLException e) {
+            e.printStackTrace();
+        //    System.out.println("[Appointment] SELECT FAILED!");
+            return null;
+	}	
+		
+        return apps;
+    }
+    
+    public List<Appointment> getSlots(String date, User user) {
+	List <Appointment> apps = new ArrayList <> ();
+	Connection connect = connection.getConnection();
+	String query = 	"SELECT * " + " FROM " + Appointment.TABLE  + " WHERE " + Appointment.COL_DATE + " = ? AND " + Appointment.COL_NAME + " = ?";
+
+        try {
+            PreparedStatement statement = connect.prepareStatement(query);
+            statement.setString(1, date);
+            statement.setString(2, user.getLastname());
             ResultSet rs = statement.executeQuery();
 			
             while(rs.next()) {

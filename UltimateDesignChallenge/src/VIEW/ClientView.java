@@ -64,7 +64,7 @@ public class ClientView extends JFrame implements ModuleView {
     private JPanel calendarPanel;
     private int yearBound, monthBound, dayBound, yearToday, monthToday;
     private String[] months = {"January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
-    
+
     /**
      * ** Agenda and Schedule View Components ***
      */
@@ -74,7 +74,7 @@ public class ClientView extends JFrame implements ModuleView {
     private ScheduleView sv;
     private JLabel agendaLbl, schedLbl;
     private String curDate, curDoctor;
-    
+
     /**
      * ** Tools taken from Ian ***
      */
@@ -89,7 +89,7 @@ public class ClientView extends JFrame implements ModuleView {
     private JLabel oldTimeLbl, newTimeLbl;
     private JComboBox newTimeCmb;
     private JButton editBtn;
-    
+
     public ClientView() {
         this.setSize(900, 660);
         mainPane = this.getContentPane();
@@ -137,6 +137,7 @@ public class ClientView extends JFrame implements ModuleView {
         mainPane.add(agendaLbl);
 
         this.sv = new ScheduleView(controller);
+        sv.setUser(user);
         scheduleScroll = new JScrollPane(sv);
         scheduleScroll.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         scheduleScroll.setVerticalScrollBarPolicy(JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED);
@@ -179,7 +180,7 @@ public class ClientView extends JFrame implements ModuleView {
     @Override
     public void updateViews(List<Appointment> apps) {
         av.setItems(apps);
-        sv.setItems(apps, user);
+        sv.setItems(apps);
     }
 
     @Override
@@ -260,7 +261,7 @@ public class ClientView extends JFrame implements ModuleView {
         filter.setBounds(60, 380, 150, 50);
         filter.addActionListener(new btnFltr_Action());
         btnClear = new JButton("Clear");
-        btnClear.setBounds(10,430,100,50);
+        btnClear.setBounds(10, 430, 100, 50);
         btnClear.addActionListener(new btnClear_Action());
         btnApp = new JButton();
         btnApp.setBounds(10, 380, 50, 50);
@@ -271,7 +272,6 @@ public class ClientView extends JFrame implements ModuleView {
         try {
             ImageIcon icon = new ImageIcon(ImageIO.read(Thread.currentThread().getContextClassLoader().getResourceAsStream("RESOURCES/btnApp.png")));
             btnApp.setIcon(new ImageIcon(icon.getImage().getScaledInstance(40, 40, Image.SCALE_DEFAULT)));
-            btnApp.setToolTipText("Make an Appointment");
         } catch (IOException e) {
             System.out.println("FILE NOT FOUND");
         }
@@ -321,16 +321,15 @@ public class ClientView extends JFrame implements ModuleView {
         errorMsg = new JLabel();
         errorMsg.setForeground(Color.red);
         errorMsg.setVisible(false);
-        
+
         GregorianCalendar cal = new GregorianCalendar();
         int dayBound = cal.get(GregorianCalendar.DAY_OF_MONTH);
         int monthBound = cal.get(GregorianCalendar.MONTH) + 1;
         int yearBound = cal.get(GregorianCalendar.YEAR);
-        
-        curDate = monthBound + "/" + dayBound + "/" + yearBound;        
+        curDate = monthBound + "/" + dayBound + "/" + yearBound;
         sDay.setText(curDate);
         eDay.setText(curDate);
-        
+
         sDayLbl.setBounds(5, 5, 100, 25);
         sTimeLbl.setBounds(5, 55, 100, 25);
         eTimeLbl.setBounds(5, 80, 100, 25);
@@ -338,7 +337,7 @@ public class ClientView extends JFrame implements ModuleView {
         eDayLbl.setBounds(5, 30, 100, 25);
         errorMsg.setBounds(5, 90, 200, 25);
         doctorLbl.setBounds(210, 30, 70, 25);
-        
+
         sDay.setBounds(105, 5, 100, 25);
         sTime.setBounds(105, 55, 100, 25);
         eTime.setBounds(105, 80, 100, 25);
@@ -347,7 +346,7 @@ public class ClientView extends JFrame implements ModuleView {
         eDay.setBounds(105, 30, 100, 25);
         btnAdd.setBounds(280, 60, 100, 30);
         btnCancel.setBounds(280, 90, 100, 30);
-        
+
         pnlApp.add(btnCancel);
         pnlApp.add(btnAdd);
         pnlApp.add(sDay);
@@ -356,7 +355,7 @@ public class ClientView extends JFrame implements ModuleView {
         pnlApp.add(eTime);
         pnlApp.add(repeat);
         pnlApp.add(doctors);
-        
+
         pnlApp.add(sDayLbl);
         pnlApp.add(eDayLbl);
         pnlApp.add(sTimeLbl);
@@ -364,17 +363,6 @@ public class ClientView extends JFrame implements ModuleView {
         pnlApp.add(repeatLbl);
         pnlApp.add(errorMsg);
         pnlApp.add(doctorLbl);
-        
-        sDay.setToolTipText("M/D/Y");
-        eDay.setToolTipText("M/D/Y");
-        sTime.setToolTipText("Enter Available Time");
-        eTime.setToolTipText("Enter Available Time");
-        repeat.setToolTipText("Choose Frequency");
-        doctors.setToolTipText("Select Available Doctor");
-        filter.setToolTipText("View Schedule Of...");
-        btnAdd.setToolTipText("Make Appointment");
-        btnCancel.setToolTipText("Cancel Appointment");
-        btnClear.setToolTipText("Delete All Scheduled Appointments");
     }
 
     @Override
@@ -452,11 +440,11 @@ public class ClientView extends JFrame implements ModuleView {
         pnlEdit.add(oldTimeLbl);
         pnlEdit.add(newTimeLbl);
         pnlEdit.add(newTimeCmb);
-        editBtn.setToolTipText("Edit Appointment");
     }
 
     public void edit(String time) {
         pnlEdit.add(btnCancel);
+        pnlEdit.add(doctors);
         oldTimeLbl.setText("Old Time: " + time);
         pnlEdit.setVisible(true);
         pnlApp.setVisible(false);
@@ -477,19 +465,20 @@ public class ClientView extends JFrame implements ModuleView {
         }
     }
 
-    class btnClear_Action implements ActionListener{
+    class btnClear_Action implements ActionListener {
+
         @Override
         public void actionPerformed(ActionEvent e) {
-            ((ClientController)controller).deleteDay(curDate,"Marasigan");
-            ((ClientController)controller).deleteDay(curDate,"Reyes");
+            ((ClientController) controller).deleteDay(curDate, "Marasigan");
+            ((ClientController) controller).deleteDay(curDate, "Reyes");
         }
     }
-    
+
     class btnFltr_Action implements ActionListener {
 
         @Override
         public void actionPerformed(ActionEvent e) {
-            av.setItems(((ClientController)controller).getAllFilter((String)filter.getSelectedItem(),curDate));
+            sv.setItems(((ClientController) controller).getAllFilter(((String) filter.getSelectedItem()).split(" ")[1], curDate));
         }
     }
 
@@ -497,7 +486,12 @@ public class ClientView extends JFrame implements ModuleView {
 
         @Override
         public void actionPerformed(ActionEvent e) {
+            pnlApp.add(btnCancel);
+            pnlApp.add(doctors);
+            revalidate();
+            repaint();
             pnlApp.setVisible(true);
+            pnlEdit.setVisible(false);
         }
     }
 
@@ -505,7 +499,12 @@ public class ClientView extends JFrame implements ModuleView {
 
         @Override
         public void actionPerformed(ActionEvent tc) {
-            ((ClientController) controller).updateViews(curDate);
+            if (((String) filter.getSelectedItem()).split(" ")[1].equals("Doctors")) {
+                ((ClientController) controller).updateViews(curDate);
+            } else {
+                av.setItems(((ClientController) controller).getSlots(curDate));
+                sv.setItems(((ClientController) controller).getAllFilter(((String) filter.getSelectedItem()).split(" ")[1], curDate));
+            }
         }
     }
 
@@ -516,12 +515,12 @@ public class ClientView extends JFrame implements ModuleView {
             List<Appointment> appsToAdd = new ArrayList<>();
             System.out.println(oldTimeLbl.getText().split(" ")[1].replaceAll(":", ""));
             int oldTime = Integer.valueOf(oldTimeLbl.getText().split(" ")[2].replaceAll(":", ""));
-            int newTime = Integer.valueOf(((String)newTimeCmb.getSelectedItem()).replaceAll(":",""));
-            appsToAdd.add(new Appointment(curDoctor,curDate,newTime,user.getLastname()));
-                    
-            director.setTimeslotBuilder(new AppointmentBuilder(),controller);
+            int newTime = Integer.valueOf(((String) newTimeCmb.getSelectedItem()).replaceAll(":", ""));
+            appsToAdd.add(new Appointment(curDoctor, curDate, newTime, user.getLastname()));
+            curDoctor = ((String) doctors.getSelectedItem()).split(" ")[1];
+            director.setTimeslotBuilder(new AppointmentBuilder(), controller);
             if (director.addApp(appsToAdd)) {
-                ((ClientController)controller).deleteAppointment(new Appointment(curDoctor,curDate,oldTime,user.getLastname()));
+                ((ClientController) controller).deleteAppointment(new Appointment(curDoctor, curDate, oldTime, user.getLastname()));
                 pnlApp.setVisible(false);
                 errorMsg.setVisible(false);
             } else {
@@ -546,16 +545,16 @@ public class ClientView extends JFrame implements ModuleView {
             }
             int startT = Integer.parseInt(sTime.getSelectedItem().toString().replace(":", ""));
             int endT = Integer.parseInt(eTime.getSelectedItem().toString().replace(":", ""));
-            
+
             List<Appointment> appsToAdd = new ArrayList<>();
             SimpleDateFormat sdf = new SimpleDateFormat("M/d/yyyy");
             Calendar c = Calendar.getInstance();
             String date = startD;
-            curDoctor = ((String)doctors.getSelectedItem()).split(" ")[1];
+            curDoctor = ((String) doctors.getSelectedItem()).split(" ")[1];
             for (int i = 0; i < daysBetween(startD, endD) + 1; i++) {
                 int time = startT;
                 while (time != endT) {
-                    appsToAdd.add(new Appointment(curDoctor,date,time,user.getLastname()));
+                    appsToAdd.add(new Appointment(curDoctor, date, time, user.getLastname()));
                     time += 30;
                     if (time % 100 >= 60) {
                         time = ((time / 100) + 1) * 100;
@@ -572,8 +571,8 @@ public class ClientView extends JFrame implements ModuleView {
                     Logger.getLogger(DoctorView.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
-            
-            director.setTimeslotBuilder(new AppointmentBuilder(),controller);
+
+            director.setTimeslotBuilder(new AppointmentBuilder(), controller);
             if (director.addApp(appsToAdd)) {
                 pnlApp.setVisible(false);
                 errorMsg.setVisible(false);
@@ -584,7 +583,7 @@ public class ClientView extends JFrame implements ModuleView {
             }
         }
     }
-    
+
     public long daysBetween(String date1, String date2) {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
         LocalDate firstDate = LocalDate.parse(date1, formatter);
@@ -592,7 +591,7 @@ public class ClientView extends JFrame implements ModuleView {
         long days = ChronoUnit.DAYS.between(firstDate, secondDate);
         return days;
     }
-    
+
     class repeat_Action implements ActionListener {
 
         @Override
@@ -654,7 +653,7 @@ public class ClientView extends JFrame implements ModuleView {
             refreshCalendar(monthToday, yearToday);
         }
     }
-    
+
     class btnCancel_Action implements ActionListener {
 
         @Override

@@ -9,14 +9,7 @@ import CONTROLLER.*;
 import MODEL.*;
 import java.awt.Color;
 import java.awt.Dimension;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import javax.swing.JPanel;
 
@@ -28,6 +21,7 @@ public class ScheduleView extends JPanel {
 
     private ModuleController controller;
     List<ScheduleItem> items;
+    private User user;
 
     public ScheduleView(ModuleController controller) {
         this.controller = controller;
@@ -35,9 +29,13 @@ public class ScheduleView extends JPanel {
         setBackground(Color.white);
         setLayout(new VerticalFlowLayout(VerticalFlowLayout.LEFT, VerticalFlowLayout.TOP, 0, 0));
     }
+    
+    public void setUser(User user) {
+        this.user = user;
+    }
 
     // LETS TRY TO ALL USE THE SAME ?
-    public void setItems(List<Appointment> apps, User user) {
+    public void setItems(List<Appointment> apps) {
         for (int i = 0; i < items.size(); i++) {
             remove(items.get(i));
         }
@@ -47,7 +45,7 @@ public class ScheduleView extends JPanel {
             times.add(app.getTime());
         }
         items.clear();
-        for (int hour = 0; hour < 24; hour++) {
+        for (int hour = 9; hour < 21; hour++) {
             for (int min = 0; min < 60; min += 30) {
                 String hourString = String.valueOf(hour);
                 if (hourString.length() == 1) {
@@ -63,7 +61,7 @@ public class ScheduleView extends JPanel {
                 // DOCTOR
                 if (controller instanceof DoctorController) {
                     if (times.contains(timecheck))
-                        items.add(new ScheduleItem(controller,time,getApps(timecheck, apps),user));
+                        items.add(new ScheduleItem(controller,time,getApp(timecheck,apps)));
                     else
                         items.add(new ScheduleItem(controller, time));
                 } // SECRETARY (CAN SEE EVERYONE)
@@ -73,7 +71,7 @@ public class ScheduleView extends JPanel {
                 else if (controller instanceof ClientController) {
                     
                     if (times.contains(timecheck))
-                        items.add(new ScheduleItem(controller,time,getApp(timecheck,apps),user));
+                        items.add(new ScheduleItem(controller,time,getApps(timecheck,apps),user));
                     else 
                         items.add(new ScheduleItem(controller,time));
                 }
@@ -90,9 +88,9 @@ public class ScheduleView extends JPanel {
         repaint();
     }
     
-    public Appointment getApp(int time, List<Appointment> apps){
-        for (Appointment app: apps){
-            if (time == app.getTime())
+    public Appointment getApp(int time, List<Appointment> apps) {
+        for (Appointment app:apps) {
+            if (app.getTime()==time)
                 return app;
         }
         return null;

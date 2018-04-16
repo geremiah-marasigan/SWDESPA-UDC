@@ -6,13 +6,6 @@
 package MODEL;
 
 import CONTROLLER.*;
-import java.sql.Connection;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
-import java.util.Date;
 import java.util.List;
 
 /**
@@ -23,14 +16,17 @@ public class AppointmentSlotBuilder extends TimeslotBuilder {
 
     @Override
     public boolean isAvailable(Appointment app) {
-        List<Appointment> apps = ((DoctorController) controller).getSlots(app.getDate());
+        List<Appointment> apps = ((DoctorController) controller).getSlots(app.getDate(), ((DoctorController)controller).getUser());
+
         for (Appointment slot : apps) {
             // FALSE IF YOU TRY TO SET A SLOT WHEN YOU ALREADY HAVE ONE
-            if (app.getTime() == slot.getTime() && app.getName().equals(slot.getName()))
+            if (app.getTime() == slot.getTime())
                 return false;
             // FALSE IF YOU TRY TO SET A SLOT IN A BOOKED SLOT
+            /*
             else if (app.getTime() == slot.getTime() && !slot.getTaken().equals("NOT_TAKEN"))
                 return false;
+            */
         }
 
         return true;

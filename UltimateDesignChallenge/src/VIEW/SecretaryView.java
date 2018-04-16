@@ -175,6 +175,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         cmbAgenda = new JComboBox(docAgenda);
         cmbAgenda.setBounds(510, 10, 100, 25);
         mainPane.add(cmbAgenda);
+        runTimer();
         
         bttnNotify.addActionListener(new ActionListener(){
                     public void actionPerformed(ActionEvent e){
@@ -210,7 +211,37 @@ public class SecretaryView extends JFrame implements ModuleView {
         setTitle("Secretary Module - Secretary " + user.getFirstname());
     }
 
+    @Override
+    public void setScheduleItems(List<Appointment> apps) {
+        sv.setItems();
+    }
+
+    @Override
+    public void setAgendaItems(List<Appointment> apps, String date) {
+        av.setItems(apps, date);
+    }
+
+    @Override
+    public void updateViews(List<Appointment> apps) {
+        sv.setItems(apps, docList, curDate);
+        av.setItems(apps, curDate);
+    }
     
+    public void filterViews(List<Appointment> apps, String name) {
+        sv.filterItems(apps, docList, curDate, name);
+        av.filterItems(apps, curDate, name);
+    }
+
+    public void runTimer(){
+        timerTask = new TimerTask(){
+            @Override
+            public void run(){
+                System.out.println("test");
+            }
+        };
+        timer = new java.util.Timer(true);
+        timer.scheduleAtFixedRate(timerTask, 5000, 5000);
+    }
     @Override
     public void initCalendar() {
         modelCalendarTable = new DefaultTableModel() {
@@ -423,21 +454,6 @@ public class SecretaryView extends JFrame implements ModuleView {
 
         calendarTable.setDefaultRenderer(calendarTable.getColumnClass(0), new TableRenderer());
     }
-
-    @Override
-    public void setScheduleItems(List<Appointment> apps) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void setAgendaItems(List<Appointment> apps, String date) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public void updateViews(List<Appointment> apps) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
     
     class calListener extends MouseAdapter {
         @Override
@@ -456,7 +472,7 @@ public class SecretaryView extends JFrame implements ModuleView {
         public void actionPerformed (ActionEvent e){
             String selectedDoc = "";
             selectedDoc = cmbAgenda.getSelectedItem().toString();
-//            ((SecretaryController)controller).filterViews(selectedDoc);
+            ((SecretaryController)controller).filterViews(selectedDoc);
         }
     }
     
@@ -521,7 +537,14 @@ public class SecretaryView extends JFrame implements ModuleView {
             int endT = Integer.parseInt(eTime.getSelectedItem().toString().replace(":", ""));
             
             director.setTimeslotBuilder(new AppointmentBuilder(), controller);
-//            /
+            if (director.addAppSlot(name.getText(), startD, endD, choice, startT, endT)) {
+                pnlApp.setVisible(false); 
+                errorMsg.setVisible(false);
+            }
+            else {
+                errorMsg.setText("ERROR! Conflicting Appointment Slots");
+                errorMsg.setVisible(true);
+            }
         } 
     }
     
