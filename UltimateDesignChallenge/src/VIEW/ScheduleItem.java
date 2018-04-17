@@ -143,24 +143,37 @@ public class ScheduleItem extends JPanel {
         this.controller = c;
         for(int i = 0; i < apps.size(); i++){
                     this.app = apps.get(i);
-                    if (apps.get(0).getTaken().equals("NOT_TAKEN")) {
+                    if (apps.get(i).getTaken().equals("NOT_TAKEN")) {
+                        System.out.println("CHOCOLATE NOT TAKEN: " + apps.get(i).getName());
                         this.setBackground(new Color(186, 255, 133));
-                        this.name.setText("Dr. " + apps.get(0).getName() + ": FREE SLOT");
+                        this.name.setText("Dr. " + apps.get(i).getName() + ": FREE SLOT");
                         
                         for(int j = 0; j < apps.size(); j++)
                         {
                             if(apps.get(j).getDate().equals(apps.get(i).getDate())
                                && apps.get(j).getTime() == apps.get(i).getTime()
-                               && !(apps.get(j).getName().equals(apps.get(i).getName())))
+                               && !(apps.get(j).getName().equals(apps.get(i).getName()))
+                               && (apps.get(j).getTaken().equals("NOT_TAKEN"))
+                               && (apps.get(i).getTaken().equals("NOT_TAKEN")))
                             {
                                 this.name.setText("Dr. " + apps.get(i).getName() +
                                                   ", Dr. " + apps.get(j).getName() + ": FREE SLOT");
                             }
+                            else if(apps.get(j).getDate().equals(apps.get(i).getDate())
+                               && apps.get(j).getTime() == apps.get(i).getTime()
+                               && !(apps.get(j).getName().equals(apps.get(i).getName()))
+                               && !(apps.get(j).getTaken().equals("NOT_TAKEN"))
+                               && (apps.get(i).getTaken().equals("NOT_TAKEN")))
+                               {
+                                    this.setBackground(new Color(255, 100, 100));
+                                    this.name.setText("Dr." + apps.get(0).getName() + " : " + apps.get(0).getTaken());
+                               }
                         }
                         
                         this.add(btnDelete); 
 
                     } else {
+                        System.out.println("CHOCOLATE TAKEN: " + apps.get(i).getName());
                         this.setBackground(new Color(255, 100, 100));
                         this.name.setText("Dr." + apps.get(0).getName() + " : " + apps.get(0).getTaken());
                     }

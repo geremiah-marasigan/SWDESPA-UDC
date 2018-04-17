@@ -15,10 +15,10 @@ import java.sql.SQLException;
  */
 public class CalendarDB {
     private final static String DRIVER_NAME = "com.mysql.jdbc.Driver";
-    //private final static String URL = "jdbc:mysql://localhost:3306/";
-    private final static String URL = "jdbc:mysql://192.168.0.101:3306/";
-    private final static String USERNAME = "udc";
-    private final static String PASSWORD = "udc";
+    private final static String URL = "jdbc:mysql://localhost:3306/";
+    //private final static String URL = "jdbc:mysql://192.168.0.101:3306/";
+    private final static String USERNAME = "root";
+    private final static String PASSWORD = "database";
     private final static String DATABASE = "UDC";
 	
     public Connection getConnection () {
