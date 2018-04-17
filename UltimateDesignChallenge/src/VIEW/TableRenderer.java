@@ -56,7 +56,6 @@ public class TableRenderer extends DefaultTableCellRenderer
                        yearSelected == dayYear &&
                        a.getTaken().equals("NOT_TAKEN")){
                         setBackground(new Color(178, 34, 34));
-                        System.out.println(a.getName());
                     }
                 }
             }
